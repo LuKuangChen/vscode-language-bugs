@@ -1,0 +1,43 @@
+// This grammar of the BUGS language is created with manual inspectation of the OpenBUGS manual.
+
+program := data=list | sections=section+ ws
+section := model | data
+
+model := ws 'model' ws '{' body=relation* ws '}'
+data  := ws 'data' ws '{' body=relation* ws '}'
+
+relation := stochasticRelation | deterministicRelation | indexedRelation
+
+stochasticRelation      := lhs=exp ws '~' rhs=exp cut=cut? '\s*;'?
+deterministicRelation   := lhs=exp ws '<-' rhs=exp '\s*;'?
+indexedRelation         := ws 'for' ws '\(' name=name ws 'in' domain=exp ws '\)' ws '{' ws body=relation* ws '}'
+
+cut := ws 'C[(]' lower=exp? ws ',' upper=exp? ws '[)]' | ws 'T[(]' lower=exp? ws ',' upper=exp? ws '[)]' | ws 'I[(]' lower=exp? ws ',' upper=exp? ws '[)]'
+
+// expression
+exp := exp5
+exp0 := num | structure | list | ws '\(' exp=exp5 ws '\)' | name 
+exp1 := exp0 application*
+exp2 := ws '-' exp1 | exp1
+exp3 := left=exp3 ws '\+' right=exp2 | left=exp3 ws '-' right=exp2 | exp2
+exp4 := left=exp4 ws '\*' right=exp3 | left=exp4 ws '/' right=exp3 | exp3
+exp5 := left=exp5 ws ':' right=exp4 | exp4 
+application := ws '[(]' operand=anonArgs ws '[)]' | ws '\[' index=optionalArgs ws '\]'
+
+structure   := ws 'structure[(]' ws '\.' ws 'Data' ws '=' data=exp ws ',' ws '\.' ws 'Dim' ws '=' dim=exp ws '[)]'
+list        := ws 'list[(]' content=namedArgs ws '[)]'
+
+anonArgs       := content={first=exp rest=anonArgsRest*}?
+anonArgsRest   := ws ',' item=exp
+optionalArgs       := content={first=exp? rest=optionalArgsRest*}?
+optionalArgsRest   := ws ',' item=exp?
+namedArgs       := content={firstName=name ws '=' firstExp=exp rest=namedArgsRest*}?
+namedArgsRest   := ws ',' name=name ws '=' value=exp
+
+name := ws from=@ value='[a-zA-Z][a-zA-Z0-9._]*' to=@
+
+// number
+num := ws value='-?([\d]+([.][\d]+)?|([\d]+)?[.][\d]+)([eE]-?[\d]+)?'
+
+// whitespace
+ws := '(\s*([#][^\n]*[\n])?)*'

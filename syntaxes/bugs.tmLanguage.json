@@ -1,0 +1,75 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "BUGS",
+	"patterns": [
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#strings"
+		},
+		{
+			"include": "#numbers"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#comments"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [
+				{
+					"name": "keyword.control.bugs",
+					"match": "\\b(for|in)\\b"
+				},
+				{
+					"name": "keyword.control.bugs",
+					"match": "\\b(model|data|END)\\b"
+				},
+				{
+					"name": "keyword.operator",
+					"match": "\\b(list|structure|c)\\b"
+				}
+			]
+		},
+		"strings": {
+			"name": "string.quoted.double.bugs",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.bugs",
+					"match": "\\\\."
+				}
+			]
+		},
+		"numbers": {
+			"patterns": [
+				{
+					"name": "constant.numeric.bugs",
+					"match": "-?[\\d]+([.][\\d]+)?([eE]-?[\\d]+)?"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.language",
+					"match": "\b(NA)\b"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"name": "comment.line.number-sign",
+					"match": "#.*$"
+				}
+			]
+		}
+	},
+	"scopeName": "source.bugs"
+}

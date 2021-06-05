@@ -1,0 +1,64 @@
+{
+    "name": "openbugs",
+    "displayName": "OpenBUGS",
+    "description": "OpenBUGS for Visual Studio Code",
+    "version": "0.0.1",
+    "engines": {
+        "vscode": "^1.56.0"
+    },
+    "categories": [
+        "Programming Languages",
+        "Snippets",
+        "Formatters"
+    ],
+    "activationEvents": [
+        "onLanguage:bugs",
+        "onCommand:foo.helloWorld"
+    ],
+    "main": "./client/out/extension.js",
+    "contributes": {
+        "languages": [
+            {
+                "id": "bugs",
+                "aliases": [
+                    "BUGS",
+                    "bugs",
+                    "OpenBUGS",
+                    "openbugs"
+                ],
+                "filenamePatterns": [
+                    "*model*.txt",
+                    "*data*.txt",
+                    "*inits*.txt"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "bugs",
+                "scopeName": "source.bugs",
+                "path": "./syntaxes/bugs.tmLanguage.json"
+            }
+        ],
+        "snippets": [
+            {
+                "language": "bugs",
+                "path": "./snippets.json"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -b",
+        "watch": "tsc -b -w",
+        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+        "update-parser": "npx tspeg ./Grammar/bugs.peg ./src/parseBUGS.ts && cp ./src/parseBUGS.ts ./server/src/",
+        "test": "npx tsc -t ES2015 -m commonjs ./src/test/testParser.ts && node ./src/test/testParser.js"
+    },
+    "devDependencies": {
+        "@types/node": "^15.12.0",
+        "tspeg": "^3.1.0",
+        "typescript": "^4.3.2"
+    }
+}
