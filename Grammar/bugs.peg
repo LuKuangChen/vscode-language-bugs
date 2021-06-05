@@ -1,4 +1,5 @@
 // This grammar of the BUGS language is created with manual inspectation of the OpenBUGS manual.
+// Although this grammar has been tested with 240 programs extracted from OpenBUGS documents (only 2 programs were not parsed and they are all data definition written in rectangular format, support of which is a non-goal), I am not sure if this grammar is comprehensive enough.
 
 program := data=list | sections=section+ ws
 section := model | data
