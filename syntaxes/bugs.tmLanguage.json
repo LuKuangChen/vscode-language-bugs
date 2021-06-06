@@ -9,6 +9,9 @@
 			"include": "#strings"
 		},
 		{
+			"include": "#identifiers"
+		},
+		{
 			"include": "#numbers"
 		},
 		{
@@ -43,6 +46,14 @@
 				{
 					"name": "constant.character.escape.bugs",
 					"match": "\\\\."
+				}
+			]
+		},
+		"identifiers": {
+			"patterns": [
+				{
+					"name": "variable.parameter",
+					"match": "[a-zA-Z][a-zA-Z0-9._]*"
 				}
 			]
 		},

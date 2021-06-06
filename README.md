@@ -1,4 +1,15 @@
-# OpenBUGS README
+# BUGS VSCode Support
+
+## Features
+
+- autocompletion for BUGS built-in [scalar and vector functions](https://www.multibugs.org/documentation/latest/Functions.html) and [distributions](https://www.multibugs.org/documentation/latest/Distributions.html)
+- reformat
+
+## Known issues
+
+- Supports for data files and init files are limited.
+
+# Raw
 
 This is the README for your extension "OpenBUGS". After writing up a brief description, we recommend including the following sections.
 

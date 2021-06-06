@@ -1,22 +1,35 @@
 import * as fs from 'fs';
 import { join } from 'path';
-import * as parse from '../parseBUGS';
+import * as bugs from '../../server/src/BUGSKit';
 
-let successCounter = 0;
 let errorCounter = 0;
 
 const testParseFile = (filepath: string) => {
 	fs.readFile(filepath, 'utf8', (err, data) => {
 		if (err) throw err;
 		const fileContent = data.toLocaleString();
-		const parseResult = parse.parse(fileContent);
-		if (parseResult.errs.length === 0) {
-			successCounter += 1;
-			console.log("passed", successCounter)
-		} else {
+		const parseResult = bugs.parse(fileContent);
+		if (parseResult.kind === 'error') {
 			errorCounter += 1;
-			console.log(successCounter, errorCounter, filepath)
-			console.log(JSON.stringify(parseResult.errs, null, "  "))
+			console.log('Parse Error', filepath)
+			return;
+		}
+		const program = parseResult.content;
+		function normalize(sourceCode: string): string {
+			return sourceCode.replace(/[\s;]/g, '')
+		}
+		const before = normalize(fileContent);
+		try {
+			const after = normalize(bugs.prettyPrint(program));
+			if (before !== after) {
+				console.log('Print Error: lost some info', filepath)
+				return;
+			}
+			// console.log('Passed.')
+			return;
+		} catch (_) {
+			console.log('Oops', filepath)
+			console.log(JSON.stringify(program))
 		}
 	})
 }

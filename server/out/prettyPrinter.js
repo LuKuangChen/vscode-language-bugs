@@ -1,63 +1,58 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.stringOfDoc = exports.vbox = exports.hbox = exports.indent = exports.text = void 0;
+exports.stringOfDoc = exports.lines = exports.fcatIndent = exports.fcat = exports.indent = exports.text = void 0;
 function text(content) {
-    return { kind: 'txt', content };
+    return (_) => [content];
 }
 exports.text = text;
 function indent(content) {
-    return { kind: 'ind', content };
+    return (indentTxt) => content(indentTxt).map((line) => indentTxt + line);
 }
 exports.indent = indent;
-function hbox(content) {
-    return { kind: 'seq', dir: 'hbox', content };
-}
-exports.hbox = hbox;
-function vbox(content) {
-    return { kind: 'seq', dir: 'vbox', content };
-}
-exports.vbox = vbox;
-function stringOfDoc(doc, indent = '  ') {
-    return linesOfDoc(doc, indent).join('\n');
-}
-exports.stringOfDoc = stringOfDoc;
-function linesOfDoc(doc, indent = '  ') {
-    if (doc.kind === 'ind') {
-        return linesOfDoc(doc.content).map((line) => {
-            return indent + line;
-        });
-    }
-    else if (doc.kind === 'txt') {
-        return [doc.content];
+function repeat(s, i) {
+    if (i === 0) {
+        return "";
     }
     else {
-        function repeat(s, i) {
-            if (i === 0) {
-                return "";
-            }
-            else {
-                return s + repeat(s, i - 1);
-            }
-        }
-        if (doc.dir === 'hbox') {
-            return doc.content.
-                map((doc) => linesOfDoc(doc, indent)).
-                reduce((IH, cur) => {
-                const lastLine = IH[IH.length - 1];
-                return [
-                    ...IH.slice(0, -1),
-                    lastLine + cur[0],
-                    ...cur.slice(1).map((line) => {
-                        return repeat(' ', lastLine.length) + line;
-                    })
-                ];
-            });
-        }
-        else {
-            return doc.content.
-                map((doc) => linesOfDoc(doc, indent)).
-                reduce((IH, cur) => IH.concat(cur));
-        }
+        return s + repeat(s, i - 1);
     }
 }
+function fcat(content) {
+    return (indent) => content.
+        map((doc) => doc(indent)).
+        reduce((IH, cur) => {
+        const lastLine = IH[IH.length - 1];
+        return [
+            ...IH.slice(0, -1),
+            lastLine + cur[0],
+            ...cur.slice(1)
+        ];
+    }, [""]);
+}
+exports.fcat = fcat;
+function fcatIndent(content) {
+    return (indent) => content.
+        map((doc) => doc(indent)).
+        reduce((IH, cur) => {
+        const lastLine = IH[IH.length - 1];
+        return [
+            ...IH.slice(0, -1),
+            lastLine + cur[0],
+            ...cur.slice(1).map((line) => {
+                return repeat(' ', lastLine.length) + line;
+            })
+        ];
+    }, [""]);
+}
+exports.fcatIndent = fcatIndent;
+function lines(content) {
+    return (indent) => content.flatMap((doc) => {
+        return doc(indent);
+    });
+}
+exports.lines = lines;
+function stringOfDoc(doc, indent = '  ') {
+    return doc(indent).join('\n');
+}
+exports.stringOfDoc = stringOfDoc;
 //# sourceMappingURL=prettyPrinter.js.map

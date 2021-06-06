@@ -1,44 +1,66 @@
 // This grammar of the BUGS language is created with manual inspectation of the OpenBUGS manual.
 // Although this grammar has been tested with 240 programs extracted from OpenBUGS documents (only 2 programs were not parsed and they are all data definition written in rectangular format, support of which is a non-goal), I am not sure if this grammar is comprehensive enough.
+// Firemodel.txt includes a line `xa ~ dlnorm( mu, tau ) I( , theta )`. This syntax is not documented in OpenBUGS manual.
 
-program := data=list | sections=section+ ws
-section := model | data
+program  := before=sep body=programBody after=sep
+programBody := list | rectangular | sectionList
 
-model := ws 'model' ws '{' body=relation* ws '}'
-data  := ws 'data' ws '{' body=relation* ws '}'
+rectangular := header=rectangularHeader body={sep=rowSep item=rectangularBodyItem}* sep=sep footer=rectangularFooter
+colSep := blank
+rowSep := blank '[\n]' | blank comment=comment
+rectangularHeader := content={sep=colSep item=name '\[\]'}+
+rectangularFooter := colSep 'END'
+rectangularBodyItem := content={sep=colSep item=scalar}+
 
-relation := stochasticRelation | deterministicRelation | indexedRelation
+section := header=sectionHeader sep=sep body=block
+sectionHeader := v='model' | v='data'
+sectionList := head=section tail={sep=sep item=section}*
 
-stochasticRelation      := lhs=exp ws '~' rhs=exp cut=cut? '\s*;'?
-deterministicRelation   := lhs=exp ws '<-' rhs=exp '\s*;'?
-indexedRelation         := ws 'for' ws '\(' name=name ws 'in' domain=exp ws '\)' ws '{' ws body=relation* ws '}'
+block := '{' before=relationSep body=relationList after=relationSep '}'
 
-cut := ws 'C[(]' lower=exp? ws ',' upper=exp? ws '[)]' | ws 'T[(]' lower=exp? ws ',' upper=exp? ws '[)]' | ws 'I[(]' lower=exp? ws ',' upper=exp? ws '[)]'
+relation    := stochasticRelation | deterministicRelation | indexedRelation
+relationSep := body={sep=blank item=relationSepItem}* blank
+relationSepItem := sepItem | v=';'
+relationList := head=relation tail={sep=relationSep item=relation}*
 
-// expression
-exp := exp5
-exp0 := num | structure | list | ws '\(' exp=exp5 ws '\)' | name 
-exp1 := exp0 application*
-exp2 := ws '-' exp1 | exp1
-exp3 := left=exp3 ws '\+' right=exp2 | left=exp3 ws '-' right=exp2 | exp2
-exp4 := left=exp4 ws '\*' right=exp3 | left=exp4 ws '/' right=exp3 | exp3
-exp5 := left=exp5 ws ':' right=exp4 | exp4 
-application := ws '[(]' operand=anonArgs ws '[)]' | ws '\[' index=optionalArgs ws '\]'
+cti := sep header=ctiHeader '[(]' sep lower=exp? '[,]' sep upper=exp? '[)]'
+ctiHeader := v='C' | v='T' | v='I'
 
-structure   := ws 'structure[(]' ws '\.' ws 'Data' ws '=' data=exp ws ',' ws '\.' ws 'Dim' ws '=' dim=exp ws '[)]'
-list        := ws 'list[(]' content=namedArgs ws '[)]'
+stochasticRelation      := lhs=exp beforeOp=sep '~' afterOp=sep rhs=exp cti=cti?
+deterministicRelation   := lhs=exp beforeOp=sep '<-' afterOp=sep rhs=exp
+indexedRelation         := 'for' blank '\(' blank name=name blank 'in' blank domain=exp blank '\)' afterParenR=sep body=block
 
-anonArgs       := content={first=exp rest=anonArgsRest*}?
-anonArgsRest   := ws ',' item=exp
-optionalArgs       := content={first=exp? rest=optionalArgsRest*}?
-optionalArgsRest   := ws ',' item=exp?
-namedArgs       := content={firstName=name ws '=' firstExp=exp rest=namedArgsRest*}?
-namedArgsRest   := ws ',' name=name ws '=' value=exp
+// simple concepts
+blank   := v='[^\S\n]*'
+newline := v='[\n]'
+comment := '[#]' content='[^\n]*' '[\n]'
+sep     := body={sep=blank item=sepItem}* blank
+sepItem := newline | comment
 
-name := ws from=@ value='[a-zA-Z][a-zA-Z0-9._]*' to=@
+exp  := exp5
+exp0 := scalar | structure | list | '\(' before=sep exp=exp5 after=sep '\)' | name 
+exp1 := base=exp0 applications=application*
+exp2 := '-' between=sep exp=exp1 | exp1
+exp3 := left=exp3 beforeOp=sep op=addSub afterOp=sep right=exp2 | exp2
+exp4 := left=exp4 beforeOp=sep op=mulDiv afterOp=sep right=exp3 | exp3
+exp5 := left=exp5 beforeOp=sep ':' afterOp=sep right=exp4 | exp4 
+application := functionApplication | vectorApplication
+functionApplication := beforeParen=sep '\(' beginArgs=sep operands=argumentList endArgs=sep '\)'
+vectorApplication := beforeParen=sep '\[' beginInds=sep operands=indexList endInds=sep '\]'
 
-// number
-num := ws value='-?([\d]+([.][\d]+)?|([\d]+)?[.][\d]+)([eE]-?[\d]+)?'
+addSub := v='\+' | v='-'
+mulDiv := v='\*' | v='/'
 
-// whitespace
-ws := '(\s*([#][^\n]*[\n])?)*'
+list := 'list[(]' beforeFields=sep operands=fieldList afterFields=sep '[)]'
+structure := 'structure[(]' begin=sep '\.' sepDotData=sep 'Data' eqData=nameValueSep data=exp operandSep '\.' sepDotDim=sep 'Dim' eqDim=nameValueSep dim=exp end=sep '[)]'
+
+operandSep := before=sep ',' after=sep
+argument     := exp
+argumentList := content={first=argument rest={sep=operandSep item=argument}*}?
+indexList := content={first=exp? rest={sep=operandSep item=exp?}*}?
+field     := name=name sep=nameValueSep value=exp
+fieldList := content={first=field rest={sep=operandSep item=field}*}?
+nameValueSep  := before=sep '=' after=sep
+
+name := from=@ value='[a-zA-Z][a-zA-Z0-9._]*' to=@
+scalar := value='-?([\d]+([.][\d]+)?|([\d]+)?[.][\d]+)([eE]-?[\d]+)?'

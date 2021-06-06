@@ -3,21 +3,49 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SyntaxErr = exports.parse = exports.Parser = exports.ASTKinds = void 0;
 var ASTKinds;
 (function (ASTKinds) {
-    ASTKinds["program_1"] = "program_1";
-    ASTKinds["program_2"] = "program_2";
-    ASTKinds["section_1"] = "section_1";
-    ASTKinds["section_2"] = "section_2";
-    ASTKinds["model"] = "model";
-    ASTKinds["data"] = "data";
+    ASTKinds["program"] = "program";
+    ASTKinds["programBody_1"] = "programBody_1";
+    ASTKinds["programBody_2"] = "programBody_2";
+    ASTKinds["programBody_3"] = "programBody_3";
+    ASTKinds["rectangular"] = "rectangular";
+    ASTKinds["rectangular_$0"] = "rectangular_$0";
+    ASTKinds["colSep"] = "colSep";
+    ASTKinds["rowSep_1"] = "rowSep_1";
+    ASTKinds["rowSep_2"] = "rowSep_2";
+    ASTKinds["rectangularHeader"] = "rectangularHeader";
+    ASTKinds["rectangularHeader_$0"] = "rectangularHeader_$0";
+    ASTKinds["rectangularFooter"] = "rectangularFooter";
+    ASTKinds["rectangularBodyItem"] = "rectangularBodyItem";
+    ASTKinds["rectangularBodyItem_$0"] = "rectangularBodyItem_$0";
+    ASTKinds["section"] = "section";
+    ASTKinds["sectionHeader_1"] = "sectionHeader_1";
+    ASTKinds["sectionHeader_2"] = "sectionHeader_2";
+    ASTKinds["sectionList"] = "sectionList";
+    ASTKinds["sectionList_$0"] = "sectionList_$0";
+    ASTKinds["block"] = "block";
     ASTKinds["relation_1"] = "relation_1";
     ASTKinds["relation_2"] = "relation_2";
     ASTKinds["relation_3"] = "relation_3";
+    ASTKinds["relationSep"] = "relationSep";
+    ASTKinds["relationSep_$0"] = "relationSep_$0";
+    ASTKinds["relationSepItem_1"] = "relationSepItem_1";
+    ASTKinds["relationSepItem_2"] = "relationSepItem_2";
+    ASTKinds["relationList"] = "relationList";
+    ASTKinds["relationList_$0"] = "relationList_$0";
+    ASTKinds["cti"] = "cti";
+    ASTKinds["ctiHeader_1"] = "ctiHeader_1";
+    ASTKinds["ctiHeader_2"] = "ctiHeader_2";
+    ASTKinds["ctiHeader_3"] = "ctiHeader_3";
     ASTKinds["stochasticRelation"] = "stochasticRelation";
     ASTKinds["deterministicRelation"] = "deterministicRelation";
     ASTKinds["indexedRelation"] = "indexedRelation";
-    ASTKinds["cut_1"] = "cut_1";
-    ASTKinds["cut_2"] = "cut_2";
-    ASTKinds["cut_3"] = "cut_3";
+    ASTKinds["blank"] = "blank";
+    ASTKinds["newline"] = "newline";
+    ASTKinds["comment"] = "comment";
+    ASTKinds["sep"] = "sep";
+    ASTKinds["sep_$0"] = "sep_$0";
+    ASTKinds["sepItem_1"] = "sepItem_1";
+    ASTKinds["sepItem_2"] = "sepItem_2";
     ASTKinds["exp"] = "exp";
     ASTKinds["exp0_1"] = "exp0_1";
     ASTKinds["exp0_2"] = "exp0_2";
@@ -29,28 +57,35 @@ var ASTKinds;
     ASTKinds["exp2_2"] = "exp2_2";
     ASTKinds["exp3_1"] = "exp3_1";
     ASTKinds["exp3_2"] = "exp3_2";
-    ASTKinds["exp3_3"] = "exp3_3";
     ASTKinds["exp4_1"] = "exp4_1";
     ASTKinds["exp4_2"] = "exp4_2";
-    ASTKinds["exp4_3"] = "exp4_3";
     ASTKinds["exp5_1"] = "exp5_1";
     ASTKinds["exp5_2"] = "exp5_2";
     ASTKinds["application_1"] = "application_1";
     ASTKinds["application_2"] = "application_2";
-    ASTKinds["structure"] = "structure";
+    ASTKinds["functionApplication"] = "functionApplication";
+    ASTKinds["vectorApplication"] = "vectorApplication";
+    ASTKinds["addSub_1"] = "addSub_1";
+    ASTKinds["addSub_2"] = "addSub_2";
+    ASTKinds["mulDiv_1"] = "mulDiv_1";
+    ASTKinds["mulDiv_2"] = "mulDiv_2";
     ASTKinds["list"] = "list";
-    ASTKinds["anonArgs"] = "anonArgs";
-    ASTKinds["anonArgs_$0"] = "anonArgs_$0";
-    ASTKinds["anonArgsRest"] = "anonArgsRest";
-    ASTKinds["optionalArgs"] = "optionalArgs";
-    ASTKinds["optionalArgs_$0"] = "optionalArgs_$0";
-    ASTKinds["optionalArgsRest"] = "optionalArgsRest";
-    ASTKinds["namedArgs"] = "namedArgs";
-    ASTKinds["namedArgs_$0"] = "namedArgs_$0";
-    ASTKinds["namedArgsRest"] = "namedArgsRest";
+    ASTKinds["structure"] = "structure";
+    ASTKinds["operandSep"] = "operandSep";
+    ASTKinds["argument"] = "argument";
+    ASTKinds["argumentList"] = "argumentList";
+    ASTKinds["argumentList_$0"] = "argumentList_$0";
+    ASTKinds["argumentList_$0_$0"] = "argumentList_$0_$0";
+    ASTKinds["indexList"] = "indexList";
+    ASTKinds["indexList_$0"] = "indexList_$0";
+    ASTKinds["indexList_$0_$0"] = "indexList_$0_$0";
+    ASTKinds["field"] = "field";
+    ASTKinds["fieldList"] = "fieldList";
+    ASTKinds["fieldList_$0"] = "fieldList_$0";
+    ASTKinds["fieldList_$0_$0"] = "fieldList_$0_$0";
+    ASTKinds["nameValueSep"] = "nameValueSep";
     ASTKinds["name"] = "name";
-    ASTKinds["num"] = "num";
-    ASTKinds["ws"] = "ws";
+    ASTKinds["scalar"] = "scalar";
 })(ASTKinds = exports.ASTKinds || (exports.ASTKinds = {}));
 class Parser {
     constructor(input) {
@@ -74,76 +109,240 @@ class Parser {
         this.$scope$exp5$memo.clear();
     }
     matchprogram($$dpth, $$cr) {
-        return this.choice([
-            () => this.matchprogram_1($$dpth + 1, $$cr),
-            () => this.matchprogram_2($$dpth + 1, $$cr),
-        ]);
-    }
-    matchprogram_1($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$data;
+            let $scope$before;
+            let $scope$body;
+            let $scope$after;
             let $$res = null;
             if (true
-                && ($scope$data = this.matchlist($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.program_1, data: $scope$data };
+                && ($scope$before = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$body = this.matchprogramBody($$dpth + 1, $$cr)) !== null
+                && ($scope$after = this.matchsep($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.program, before: $scope$before, body: $scope$body, after: $scope$after };
             }
             return $$res;
         });
     }
-    matchprogram_2($$dpth, $$cr) {
+    matchprogramBody($$dpth, $$cr) {
+        return this.choice([
+            () => this.matchprogramBody_1($$dpth + 1, $$cr),
+            () => this.matchprogramBody_2($$dpth + 1, $$cr),
+            () => this.matchprogramBody_3($$dpth + 1, $$cr),
+        ]);
+    }
+    matchprogramBody_1($$dpth, $$cr) {
+        return this.matchlist($$dpth + 1, $$cr);
+    }
+    matchprogramBody_2($$dpth, $$cr) {
+        return this.matchrectangular($$dpth + 1, $$cr);
+    }
+    matchprogramBody_3($$dpth, $$cr) {
+        return this.matchsectionList($$dpth + 1, $$cr);
+    }
+    matchrectangular($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$sections;
+            let $scope$header;
+            let $scope$body;
+            let $scope$sep;
+            let $scope$footer;
             let $$res = null;
             if (true
-                && ($scope$sections = this.loop(() => this.matchsection($$dpth + 1, $$cr), false)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.program_2, sections: $scope$sections };
+                && ($scope$header = this.matchrectangularHeader($$dpth + 1, $$cr)) !== null
+                && ($scope$body = this.loop(() => this.matchrectangular_$0($$dpth + 1, $$cr), true)) !== null
+                && ($scope$sep = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$footer = this.matchrectangularFooter($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.rectangular, header: $scope$header, body: $scope$body, sep: $scope$sep, footer: $scope$footer };
+            }
+            return $$res;
+        });
+    }
+    matchrectangular_$0($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$sep;
+            let $scope$item;
+            let $$res = null;
+            if (true
+                && ($scope$sep = this.matchrowSep($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchrectangularBodyItem($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.rectangular_$0, sep: $scope$sep, item: $scope$item };
+            }
+            return $$res;
+        });
+    }
+    matchcolSep($$dpth, $$cr) {
+        return this.matchblank($$dpth + 1, $$cr);
+    }
+    matchrowSep($$dpth, $$cr) {
+        return this.choice([
+            () => this.matchrowSep_1($$dpth + 1, $$cr),
+            () => this.matchrowSep_2($$dpth + 1, $$cr),
+        ]);
+    }
+    matchrowSep_1($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $$res = null;
+            if (true
+                && this.matchblank($$dpth + 1, $$cr) !== null
+                && this.regexAccept(String.raw `(?:[\n])`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.rowSep_1, };
+            }
+            return $$res;
+        });
+    }
+    matchrowSep_2($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$comment;
+            let $$res = null;
+            if (true
+                && this.matchblank($$dpth + 1, $$cr) !== null
+                && ($scope$comment = this.matchcomment($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.rowSep_2, comment: $scope$comment };
+            }
+            return $$res;
+        });
+    }
+    matchrectangularHeader($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$content;
+            let $$res = null;
+            if (true
+                && ($scope$content = this.loop(() => this.matchrectangularHeader_$0($$dpth + 1, $$cr), false)) !== null) {
+                $$res = { kind: ASTKinds.rectangularHeader, content: $scope$content };
+            }
+            return $$res;
+        });
+    }
+    matchrectangularHeader_$0($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$sep;
+            let $scope$item;
+            let $$res = null;
+            if (true
+                && ($scope$sep = this.matchcolSep($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchname($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:\[\])`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.rectangularHeader_$0, sep: $scope$sep, item: $scope$item };
+            }
+            return $$res;
+        });
+    }
+    matchrectangularFooter($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $$res = null;
+            if (true
+                && this.matchcolSep($$dpth + 1, $$cr) !== null
+                && this.regexAccept(String.raw `(?:END)`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.rectangularFooter, };
+            }
+            return $$res;
+        });
+    }
+    matchrectangularBodyItem($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$content;
+            let $$res = null;
+            if (true
+                && ($scope$content = this.loop(() => this.matchrectangularBodyItem_$0($$dpth + 1, $$cr), false)) !== null) {
+                $$res = { kind: ASTKinds.rectangularBodyItem, content: $scope$content };
+            }
+            return $$res;
+        });
+    }
+    matchrectangularBodyItem_$0($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$sep;
+            let $scope$item;
+            let $$res = null;
+            if (true
+                && ($scope$sep = this.matchcolSep($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchscalar($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.rectangularBodyItem_$0, sep: $scope$sep, item: $scope$item };
             }
             return $$res;
         });
     }
     matchsection($$dpth, $$cr) {
-        return this.choice([
-            () => this.matchsection_1($$dpth + 1, $$cr),
-            () => this.matchsection_2($$dpth + 1, $$cr),
-        ]);
-    }
-    matchsection_1($$dpth, $$cr) {
-        return this.matchmodel($$dpth + 1, $$cr);
-    }
-    matchsection_2($$dpth, $$cr) {
-        return this.matchdata($$dpth + 1, $$cr);
-    }
-    matchmodel($$dpth, $$cr) {
         return this.run($$dpth, () => {
+            let $scope$header;
+            let $scope$sep;
             let $scope$body;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:model)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:{)`, $$dpth + 1, $$cr) !== null
-                && ($scope$body = this.loop(() => this.matchrelation($$dpth + 1, $$cr), true)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:})`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.model, body: $scope$body };
+                && ($scope$header = this.matchsectionHeader($$dpth + 1, $$cr)) !== null
+                && ($scope$sep = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$body = this.matchblock($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.section, header: $scope$header, sep: $scope$sep, body: $scope$body };
             }
             return $$res;
         });
     }
-    matchdata($$dpth, $$cr) {
+    matchsectionHeader($$dpth, $$cr) {
+        return this.choice([
+            () => this.matchsectionHeader_1($$dpth + 1, $$cr),
+            () => this.matchsectionHeader_2($$dpth + 1, $$cr),
+        ]);
+    }
+    matchsectionHeader_1($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$body;
+            let $scope$v;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:data)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$v = this.regexAccept(String.raw `(?:model)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.sectionHeader_1, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchsectionHeader_2($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:data)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.sectionHeader_2, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchsectionList($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$head;
+            let $scope$tail;
+            let $$res = null;
+            if (true
+                && ($scope$head = this.matchsection($$dpth + 1, $$cr)) !== null
+                && ($scope$tail = this.loop(() => this.matchsectionList_$0($$dpth + 1, $$cr), true)) !== null) {
+                $$res = { kind: ASTKinds.sectionList, head: $scope$head, tail: $scope$tail };
+            }
+            return $$res;
+        });
+    }
+    matchsectionList_$0($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$sep;
+            let $scope$item;
+            let $$res = null;
+            if (true
+                && ($scope$sep = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchsection($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.sectionList_$0, sep: $scope$sep, item: $scope$item };
+            }
+            return $$res;
+        });
+    }
+    matchblock($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$before;
+            let $scope$body;
+            let $scope$after;
+            let $$res = null;
+            if (true
                 && this.regexAccept(String.raw `(?:{)`, $$dpth + 1, $$cr) !== null
-                && ($scope$body = this.loop(() => this.matchrelation($$dpth + 1, $$cr), true)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$before = this.matchrelationSep($$dpth + 1, $$cr)) !== null
+                && ($scope$body = this.matchrelationList($$dpth + 1, $$cr)) !== null
+                && ($scope$after = this.matchrelationSep($$dpth + 1, $$cr)) !== null
                 && this.regexAccept(String.raw `(?:})`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.data, body: $scope$body };
+                $$res = { kind: ASTKinds.block, before: $scope$before, body: $scope$body, after: $scope$after };
             }
             return $$res;
         });
@@ -164,20 +363,154 @@ class Parser {
     matchrelation_3($$dpth, $$cr) {
         return this.matchindexedRelation($$dpth + 1, $$cr);
     }
+    matchrelationSep($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$body;
+            let $$res = null;
+            if (true
+                && ($scope$body = this.loop(() => this.matchrelationSep_$0($$dpth + 1, $$cr), true)) !== null
+                && this.matchblank($$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.relationSep, body: $scope$body };
+            }
+            return $$res;
+        });
+    }
+    matchrelationSep_$0($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$sep;
+            let $scope$item;
+            let $$res = null;
+            if (true
+                && ($scope$sep = this.matchblank($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchrelationSepItem($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.relationSep_$0, sep: $scope$sep, item: $scope$item };
+            }
+            return $$res;
+        });
+    }
+    matchrelationSepItem($$dpth, $$cr) {
+        return this.choice([
+            () => this.matchrelationSepItem_1($$dpth + 1, $$cr),
+            () => this.matchrelationSepItem_2($$dpth + 1, $$cr),
+        ]);
+    }
+    matchrelationSepItem_1($$dpth, $$cr) {
+        return this.matchsepItem($$dpth + 1, $$cr);
+    }
+    matchrelationSepItem_2($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:;)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.relationSepItem_2, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchrelationList($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$head;
+            let $scope$tail;
+            let $$res = null;
+            if (true
+                && ($scope$head = this.matchrelation($$dpth + 1, $$cr)) !== null
+                && ($scope$tail = this.loop(() => this.matchrelationList_$0($$dpth + 1, $$cr), true)) !== null) {
+                $$res = { kind: ASTKinds.relationList, head: $scope$head, tail: $scope$tail };
+            }
+            return $$res;
+        });
+    }
+    matchrelationList_$0($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$sep;
+            let $scope$item;
+            let $$res = null;
+            if (true
+                && ($scope$sep = this.matchrelationSep($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchrelation($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.relationList_$0, sep: $scope$sep, item: $scope$item };
+            }
+            return $$res;
+        });
+    }
+    matchcti($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$header;
+            let $scope$lower;
+            let $scope$upper;
+            let $$res = null;
+            if (true
+                && this.matchsep($$dpth + 1, $$cr) !== null
+                && ($scope$header = this.matchctiHeader($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:[(])`, $$dpth + 1, $$cr) !== null
+                && this.matchsep($$dpth + 1, $$cr) !== null
+                && (($scope$lower = this.matchexp($$dpth + 1, $$cr)) || true)
+                && this.regexAccept(String.raw `(?:[,])`, $$dpth + 1, $$cr) !== null
+                && this.matchsep($$dpth + 1, $$cr) !== null
+                && (($scope$upper = this.matchexp($$dpth + 1, $$cr)) || true)
+                && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.cti, header: $scope$header, lower: $scope$lower, upper: $scope$upper };
+            }
+            return $$res;
+        });
+    }
+    matchctiHeader($$dpth, $$cr) {
+        return this.choice([
+            () => this.matchctiHeader_1($$dpth + 1, $$cr),
+            () => this.matchctiHeader_2($$dpth + 1, $$cr),
+            () => this.matchctiHeader_3($$dpth + 1, $$cr),
+        ]);
+    }
+    matchctiHeader_1($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:C)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.ctiHeader_1, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchctiHeader_2($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:T)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.ctiHeader_2, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchctiHeader_3($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:I)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.ctiHeader_3, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
     matchstochasticRelation($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$lhs;
+            let $scope$beforeOp;
+            let $scope$afterOp;
             let $scope$rhs;
-            let $scope$cut;
+            let $scope$cti;
             let $$res = null;
             if (true
                 && ($scope$lhs = this.matchexp($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$beforeOp = this.matchsep($$dpth + 1, $$cr)) !== null
                 && this.regexAccept(String.raw `(?:~)`, $$dpth + 1, $$cr) !== null
+                && ($scope$afterOp = this.matchsep($$dpth + 1, $$cr)) !== null
                 && ($scope$rhs = this.matchexp($$dpth + 1, $$cr)) !== null
-                && (($scope$cut = this.matchcut($$dpth + 1, $$cr)) || true)
-                && ((this.regexAccept(String.raw `(?:\s*;)`, $$dpth + 1, $$cr)) || true)) {
-                $$res = { kind: ASTKinds.stochasticRelation, lhs: $scope$lhs, rhs: $scope$rhs, cut: $scope$cut };
+                && (($scope$cti = this.matchcti($$dpth + 1, $$cr)) || true)) {
+                $$res = { kind: ASTKinds.stochasticRelation, lhs: $scope$lhs, beforeOp: $scope$beforeOp, afterOp: $scope$afterOp, rhs: $scope$rhs, cti: $scope$cti };
             }
             return $$res;
         });
@@ -185,15 +518,17 @@ class Parser {
     matchdeterministicRelation($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$lhs;
+            let $scope$beforeOp;
+            let $scope$afterOp;
             let $scope$rhs;
             let $$res = null;
             if (true
                 && ($scope$lhs = this.matchexp($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$beforeOp = this.matchsep($$dpth + 1, $$cr)) !== null
                 && this.regexAccept(String.raw `(?:<-)`, $$dpth + 1, $$cr) !== null
-                && ($scope$rhs = this.matchexp($$dpth + 1, $$cr)) !== null
-                && ((this.regexAccept(String.raw `(?:\s*;)`, $$dpth + 1, $$cr)) || true)) {
-                $$res = { kind: ASTKinds.deterministicRelation, lhs: $scope$lhs, rhs: $scope$rhs };
+                && ($scope$afterOp = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$rhs = this.matchexp($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.deterministicRelation, lhs: $scope$lhs, beforeOp: $scope$beforeOp, afterOp: $scope$afterOp, rhs: $scope$rhs };
             }
             return $$res;
         });
@@ -202,93 +537,99 @@ class Parser {
         return this.run($$dpth, () => {
             let $scope$name;
             let $scope$domain;
+            let $scope$afterParenR;
             let $scope$body;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:for)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && this.matchblank($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:\()`, $$dpth + 1, $$cr) !== null
+                && this.matchblank($$dpth + 1, $$cr) !== null
                 && ($scope$name = this.matchname($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && this.matchblank($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:in)`, $$dpth + 1, $$cr) !== null
+                && this.matchblank($$dpth + 1, $$cr) !== null
                 && ($scope$domain = this.matchexp($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && this.matchblank($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:\))`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:{)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && ($scope$body = this.loop(() => this.matchrelation($$dpth + 1, $$cr), true)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:})`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.indexedRelation, name: $scope$name, domain: $scope$domain, body: $scope$body };
+                && ($scope$afterParenR = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$body = this.matchblock($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.indexedRelation, name: $scope$name, domain: $scope$domain, afterParenR: $scope$afterParenR, body: $scope$body };
             }
             return $$res;
         });
     }
-    matchcut($$dpth, $$cr) {
+    matchblank($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:[^\S\n]*)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.blank, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchnewline($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:[\n])`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.newline, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchcomment($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$content;
+            let $$res = null;
+            if (true
+                && this.regexAccept(String.raw `(?:[#])`, $$dpth + 1, $$cr) !== null
+                && ($scope$content = this.regexAccept(String.raw `(?:[^\n]*)`, $$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:[\n])`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.comment, content: $scope$content };
+            }
+            return $$res;
+        });
+    }
+    matchsep($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$body;
+            let $$res = null;
+            if (true
+                && ($scope$body = this.loop(() => this.matchsep_$0($$dpth + 1, $$cr), true)) !== null
+                && this.matchblank($$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.sep, body: $scope$body };
+            }
+            return $$res;
+        });
+    }
+    matchsep_$0($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$sep;
+            let $scope$item;
+            let $$res = null;
+            if (true
+                && ($scope$sep = this.matchblank($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchsepItem($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.sep_$0, sep: $scope$sep, item: $scope$item };
+            }
+            return $$res;
+        });
+    }
+    matchsepItem($$dpth, $$cr) {
         return this.choice([
-            () => this.matchcut_1($$dpth + 1, $$cr),
-            () => this.matchcut_2($$dpth + 1, $$cr),
-            () => this.matchcut_3($$dpth + 1, $$cr),
+            () => this.matchsepItem_1($$dpth + 1, $$cr),
+            () => this.matchsepItem_2($$dpth + 1, $$cr),
         ]);
     }
-    matchcut_1($$dpth, $$cr) {
-        return this.run($$dpth, () => {
-            let $scope$lower;
-            let $scope$upper;
-            let $$res = null;
-            if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:C[(])`, $$dpth + 1, $$cr) !== null
-                && (($scope$lower = this.matchexp($$dpth + 1, $$cr)) || true)
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
-                && (($scope$upper = this.matchexp($$dpth + 1, $$cr)) || true)
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.cut_1, lower: $scope$lower, upper: $scope$upper };
-            }
-            return $$res;
-        });
+    matchsepItem_1($$dpth, $$cr) {
+        return this.matchnewline($$dpth + 1, $$cr);
     }
-    matchcut_2($$dpth, $$cr) {
-        return this.run($$dpth, () => {
-            let $scope$lower;
-            let $scope$upper;
-            let $$res = null;
-            if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:T[(])`, $$dpth + 1, $$cr) !== null
-                && (($scope$lower = this.matchexp($$dpth + 1, $$cr)) || true)
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
-                && (($scope$upper = this.matchexp($$dpth + 1, $$cr)) || true)
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.cut_2, lower: $scope$lower, upper: $scope$upper };
-            }
-            return $$res;
-        });
-    }
-    matchcut_3($$dpth, $$cr) {
-        return this.run($$dpth, () => {
-            let $scope$lower;
-            let $scope$upper;
-            let $$res = null;
-            if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:I[(])`, $$dpth + 1, $$cr) !== null
-                && (($scope$lower = this.matchexp($$dpth + 1, $$cr)) || true)
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
-                && (($scope$upper = this.matchexp($$dpth + 1, $$cr)) || true)
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.cut_3, lower: $scope$lower, upper: $scope$upper };
-            }
-            return $$res;
-        });
+    matchsepItem_2($$dpth, $$cr) {
+        return this.matchcomment($$dpth + 1, $$cr);
     }
     matchexp($$dpth, $$cr) {
         return this.matchexp5($$dpth + 1, $$cr);
@@ -303,7 +644,7 @@ class Parser {
         ]);
     }
     matchexp0_1($$dpth, $$cr) {
-        return this.matchnum($$dpth + 1, $$cr);
+        return this.matchscalar($$dpth + 1, $$cr);
     }
     matchexp0_2($$dpth, $$cr) {
         return this.matchstructure($$dpth + 1, $$cr);
@@ -313,15 +654,17 @@ class Parser {
     }
     matchexp0_4($$dpth, $$cr) {
         return this.run($$dpth, () => {
+            let $scope$before;
             let $scope$exp;
+            let $scope$after;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:\()`, $$dpth + 1, $$cr) !== null
+                && ($scope$before = this.matchsep($$dpth + 1, $$cr)) !== null
                 && ($scope$exp = this.matchexp5($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$after = this.matchsep($$dpth + 1, $$cr)) !== null
                 && this.regexAccept(String.raw `(?:\))`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.exp0_4, exp: $scope$exp };
+                $$res = { kind: ASTKinds.exp0_4, before: $scope$before, exp: $scope$exp, after: $scope$after };
             }
             return $$res;
         });
@@ -331,11 +674,13 @@ class Parser {
     }
     matchexp1($$dpth, $$cr) {
         return this.run($$dpth, () => {
+            let $scope$base;
+            let $scope$applications;
             let $$res = null;
             if (true
-                && this.matchexp0($$dpth + 1, $$cr) !== null
-                && this.loop(() => this.matchapplication($$dpth + 1, $$cr), true) !== null) {
-                $$res = { kind: ASTKinds.exp1, };
+                && ($scope$base = this.matchexp0($$dpth + 1, $$cr)) !== null
+                && ($scope$applications = this.loop(() => this.matchapplication($$dpth + 1, $$cr), true)) !== null) {
+                $$res = { kind: ASTKinds.exp1, base: $scope$base, applications: $scope$applications };
             }
             return $$res;
         });
@@ -348,12 +693,14 @@ class Parser {
     }
     matchexp2_1($$dpth, $$cr) {
         return this.run($$dpth, () => {
+            let $scope$between;
+            let $scope$exp;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:-)`, $$dpth + 1, $$cr) !== null
-                && this.matchexp1($$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.exp2_1, };
+                && ($scope$between = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$exp = this.matchexp1($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.exp2_1, between: $scope$between, exp: $scope$exp };
             }
             return $$res;
         });
@@ -366,7 +713,6 @@ class Parser {
             return this.choice([
                 () => this.matchexp3_1($$dpth + 1, $$cr),
                 () => this.matchexp3_2($$dpth + 1, $$cr),
-                () => this.matchexp3_3($$dpth + 1, $$cr),
             ]);
         };
         const $scope$pos = this.mark();
@@ -397,34 +743,23 @@ class Parser {
     matchexp3_1($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$left;
+            let $scope$beforeOp;
+            let $scope$op;
+            let $scope$afterOp;
             let $scope$right;
             let $$res = null;
             if (true
                 && ($scope$left = this.matchexp3($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:\+)`, $$dpth + 1, $$cr) !== null
+                && ($scope$beforeOp = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$op = this.matchaddSub($$dpth + 1, $$cr)) !== null
+                && ($scope$afterOp = this.matchsep($$dpth + 1, $$cr)) !== null
                 && ($scope$right = this.matchexp2($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.exp3_1, left: $scope$left, right: $scope$right };
+                $$res = { kind: ASTKinds.exp3_1, left: $scope$left, beforeOp: $scope$beforeOp, op: $scope$op, afterOp: $scope$afterOp, right: $scope$right };
             }
             return $$res;
         });
     }
     matchexp3_2($$dpth, $$cr) {
-        return this.run($$dpth, () => {
-            let $scope$left;
-            let $scope$right;
-            let $$res = null;
-            if (true
-                && ($scope$left = this.matchexp3($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:-)`, $$dpth + 1, $$cr) !== null
-                && ($scope$right = this.matchexp2($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.exp3_2, left: $scope$left, right: $scope$right };
-            }
-            return $$res;
-        });
-    }
-    matchexp3_3($$dpth, $$cr) {
         return this.matchexp2($$dpth + 1, $$cr);
     }
     matchexp4($$dpth, $$cr) {
@@ -432,7 +767,6 @@ class Parser {
             return this.choice([
                 () => this.matchexp4_1($$dpth + 1, $$cr),
                 () => this.matchexp4_2($$dpth + 1, $$cr),
-                () => this.matchexp4_3($$dpth + 1, $$cr),
             ]);
         };
         const $scope$pos = this.mark();
@@ -463,34 +797,23 @@ class Parser {
     matchexp4_1($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$left;
+            let $scope$beforeOp;
+            let $scope$op;
+            let $scope$afterOp;
             let $scope$right;
             let $$res = null;
             if (true
                 && ($scope$left = this.matchexp4($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:\*)`, $$dpth + 1, $$cr) !== null
+                && ($scope$beforeOp = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$op = this.matchmulDiv($$dpth + 1, $$cr)) !== null
+                && ($scope$afterOp = this.matchsep($$dpth + 1, $$cr)) !== null
                 && ($scope$right = this.matchexp3($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.exp4_1, left: $scope$left, right: $scope$right };
+                $$res = { kind: ASTKinds.exp4_1, left: $scope$left, beforeOp: $scope$beforeOp, op: $scope$op, afterOp: $scope$afterOp, right: $scope$right };
             }
             return $$res;
         });
     }
     matchexp4_2($$dpth, $$cr) {
-        return this.run($$dpth, () => {
-            let $scope$left;
-            let $scope$right;
-            let $$res = null;
-            if (true
-                && ($scope$left = this.matchexp4($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:/)`, $$dpth + 1, $$cr) !== null
-                && ($scope$right = this.matchexp3($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.exp4_2, left: $scope$left, right: $scope$right };
-            }
-            return $$res;
-        });
-    }
-    matchexp4_3($$dpth, $$cr) {
         return this.matchexp3($$dpth + 1, $$cr);
     }
     matchexp5($$dpth, $$cr) {
@@ -528,14 +851,17 @@ class Parser {
     matchexp5_1($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$left;
+            let $scope$beforeOp;
+            let $scope$afterOp;
             let $scope$right;
             let $$res = null;
             if (true
                 && ($scope$left = this.matchexp5($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$beforeOp = this.matchsep($$dpth + 1, $$cr)) !== null
                 && this.regexAccept(String.raw `(?::)`, $$dpth + 1, $$cr) !== null
+                && ($scope$afterOp = this.matchsep($$dpth + 1, $$cr)) !== null
                 && ($scope$right = this.matchexp4($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.exp5_1, left: $scope$left, right: $scope$right };
+                $$res = { kind: ASTKinds.exp5_1, left: $scope$left, beforeOp: $scope$beforeOp, afterOp: $scope$afterOp, right: $scope$right };
             }
             return $$res;
         });
@@ -550,196 +876,307 @@ class Parser {
         ]);
     }
     matchapplication_1($$dpth, $$cr) {
-        return this.run($$dpth, () => {
-            let $scope$operand;
-            let $$res = null;
-            if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:[(])`, $$dpth + 1, $$cr) !== null
-                && ($scope$operand = this.matchanonArgs($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.application_1, operand: $scope$operand };
-            }
-            return $$res;
-        });
+        return this.matchfunctionApplication($$dpth + 1, $$cr);
     }
     matchapplication_2($$dpth, $$cr) {
+        return this.matchvectorApplication($$dpth + 1, $$cr);
+    }
+    matchfunctionApplication($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$index;
+            let $scope$beforeParen;
+            let $scope$beginArgs;
+            let $scope$operands;
+            let $scope$endArgs;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:\[)`, $$dpth + 1, $$cr) !== null
-                && ($scope$index = this.matchoptionalArgs($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:\])`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.application_2, index: $scope$index };
+                && ($scope$beforeParen = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:\()`, $$dpth + 1, $$cr) !== null
+                && ($scope$beginArgs = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$operands = this.matchargumentList($$dpth + 1, $$cr)) !== null
+                && ($scope$endArgs = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:\))`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.functionApplication, beforeParen: $scope$beforeParen, beginArgs: $scope$beginArgs, operands: $scope$operands, endArgs: $scope$endArgs };
             }
             return $$res;
         });
     }
-    matchstructure($$dpth, $$cr) {
+    matchvectorApplication($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$data;
-            let $scope$dim;
+            let $scope$beforeParen;
+            let $scope$beginInds;
+            let $scope$operands;
+            let $scope$endInds;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:structure[(])`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:\.)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:Data)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:=)`, $$dpth + 1, $$cr) !== null
-                && ($scope$data = this.matchexp($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:\.)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:Dim)`, $$dpth + 1, $$cr) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:=)`, $$dpth + 1, $$cr) !== null
-                && ($scope$dim = this.matchexp($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.structure, data: $scope$data, dim: $scope$dim };
+                && ($scope$beforeParen = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:\[)`, $$dpth + 1, $$cr) !== null
+                && ($scope$beginInds = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$operands = this.matchindexList($$dpth + 1, $$cr)) !== null
+                && ($scope$endInds = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:\])`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.vectorApplication, beforeParen: $scope$beforeParen, beginInds: $scope$beginInds, operands: $scope$operands, endInds: $scope$endInds };
+            }
+            return $$res;
+        });
+    }
+    matchaddSub($$dpth, $$cr) {
+        return this.choice([
+            () => this.matchaddSub_1($$dpth + 1, $$cr),
+            () => this.matchaddSub_2($$dpth + 1, $$cr),
+        ]);
+    }
+    matchaddSub_1($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:\+)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.addSub_1, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchaddSub_2($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:-)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.addSub_2, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchmulDiv($$dpth, $$cr) {
+        return this.choice([
+            () => this.matchmulDiv_1($$dpth + 1, $$cr),
+            () => this.matchmulDiv_2($$dpth + 1, $$cr),
+        ]);
+    }
+    matchmulDiv_1($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:\*)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.mulDiv_1, v: $scope$v };
+            }
+            return $$res;
+        });
+    }
+    matchmulDiv_2($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$v;
+            let $$res = null;
+            if (true
+                && ($scope$v = this.regexAccept(String.raw `(?:/)`, $$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.mulDiv_2, v: $scope$v };
             }
             return $$res;
         });
     }
     matchlist($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$content;
+            let $scope$beforeFields;
+            let $scope$operands;
+            let $scope$afterFields;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:list[(])`, $$dpth + 1, $$cr) !== null
-                && ($scope$content = this.matchnamedArgs($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$beforeFields = this.matchsep($$dpth + 1, $$cr)) !== null
+                && ($scope$operands = this.matchfieldList($$dpth + 1, $$cr)) !== null
+                && ($scope$afterFields = this.matchsep($$dpth + 1, $$cr)) !== null
                 && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
-                $$res = { kind: ASTKinds.list, content: $scope$content };
+                $$res = { kind: ASTKinds.list, beforeFields: $scope$beforeFields, operands: $scope$operands, afterFields: $scope$afterFields };
             }
             return $$res;
         });
     }
-    matchanonArgs($$dpth, $$cr) {
+    matchstructure($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$begin;
+            let $scope$sepDotData;
+            let $scope$eqData;
+            let $scope$data;
+            let $scope$sepDotDim;
+            let $scope$eqDim;
+            let $scope$dim;
+            let $scope$end;
+            let $$res = null;
+            if (true
+                && this.regexAccept(String.raw `(?:structure[(])`, $$dpth + 1, $$cr) !== null
+                && ($scope$begin = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:\.)`, $$dpth + 1, $$cr) !== null
+                && ($scope$sepDotData = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:Data)`, $$dpth + 1, $$cr) !== null
+                && ($scope$eqData = this.matchnameValueSep($$dpth + 1, $$cr)) !== null
+                && ($scope$data = this.matchexp($$dpth + 1, $$cr)) !== null
+                && this.matchoperandSep($$dpth + 1, $$cr) !== null
+                && this.regexAccept(String.raw `(?:\.)`, $$dpth + 1, $$cr) !== null
+                && ($scope$sepDotDim = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:Dim)`, $$dpth + 1, $$cr) !== null
+                && ($scope$eqDim = this.matchnameValueSep($$dpth + 1, $$cr)) !== null
+                && ($scope$dim = this.matchexp($$dpth + 1, $$cr)) !== null
+                && ($scope$end = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
+                $$res = { kind: ASTKinds.structure, begin: $scope$begin, sepDotData: $scope$sepDotData, eqData: $scope$eqData, data: $scope$data, sepDotDim: $scope$sepDotDim, eqDim: $scope$eqDim, dim: $scope$dim, end: $scope$end };
+            }
+            return $$res;
+        });
+    }
+    matchoperandSep($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$before;
+            let $scope$after;
+            let $$res = null;
+            if (true
+                && ($scope$before = this.matchsep($$dpth + 1, $$cr)) !== null
+                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
+                && ($scope$after = this.matchsep($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.operandSep, before: $scope$before, after: $scope$after };
+            }
+            return $$res;
+        });
+    }
+    matchargument($$dpth, $$cr) {
+        return this.matchexp($$dpth + 1, $$cr);
+    }
+    matchargumentList($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$content;
             let $$res = null;
             if (true
-                && (($scope$content = this.matchanonArgs_$0($$dpth + 1, $$cr)) || true)) {
-                $$res = { kind: ASTKinds.anonArgs, content: $scope$content };
+                && (($scope$content = this.matchargumentList_$0($$dpth + 1, $$cr)) || true)) {
+                $$res = { kind: ASTKinds.argumentList, content: $scope$content };
             }
             return $$res;
         });
     }
-    matchanonArgs_$0($$dpth, $$cr) {
+    matchargumentList_$0($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$first;
             let $scope$rest;
             let $$res = null;
             if (true
-                && ($scope$first = this.matchexp($$dpth + 1, $$cr)) !== null
-                && ($scope$rest = this.loop(() => this.matchanonArgsRest($$dpth + 1, $$cr), true)) !== null) {
-                $$res = { kind: ASTKinds.anonArgs_$0, first: $scope$first, rest: $scope$rest };
+                && ($scope$first = this.matchargument($$dpth + 1, $$cr)) !== null
+                && ($scope$rest = this.loop(() => this.matchargumentList_$0_$0($$dpth + 1, $$cr), true)) !== null) {
+                $$res = { kind: ASTKinds.argumentList_$0, first: $scope$first, rest: $scope$rest };
             }
             return $$res;
         });
     }
-    matchanonArgsRest($$dpth, $$cr) {
+    matchargumentList_$0_$0($$dpth, $$cr) {
         return this.run($$dpth, () => {
+            let $scope$sep;
             let $scope$item;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
-                && ($scope$item = this.matchexp($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.anonArgsRest, item: $scope$item };
+                && ($scope$sep = this.matchoperandSep($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchargument($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.argumentList_$0_$0, sep: $scope$sep, item: $scope$item };
             }
             return $$res;
         });
     }
-    matchoptionalArgs($$dpth, $$cr) {
+    matchindexList($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$content;
             let $$res = null;
             if (true
-                && (($scope$content = this.matchoptionalArgs_$0($$dpth + 1, $$cr)) || true)) {
-                $$res = { kind: ASTKinds.optionalArgs, content: $scope$content };
+                && (($scope$content = this.matchindexList_$0($$dpth + 1, $$cr)) || true)) {
+                $$res = { kind: ASTKinds.indexList, content: $scope$content };
             }
             return $$res;
         });
     }
-    matchoptionalArgs_$0($$dpth, $$cr) {
+    matchindexList_$0($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$first;
             let $scope$rest;
             let $$res = null;
             if (true
                 && (($scope$first = this.matchexp($$dpth + 1, $$cr)) || true)
-                && ($scope$rest = this.loop(() => this.matchoptionalArgsRest($$dpth + 1, $$cr), true)) !== null) {
-                $$res = { kind: ASTKinds.optionalArgs_$0, first: $scope$first, rest: $scope$rest };
+                && ($scope$rest = this.loop(() => this.matchindexList_$0_$0($$dpth + 1, $$cr), true)) !== null) {
+                $$res = { kind: ASTKinds.indexList_$0, first: $scope$first, rest: $scope$rest };
             }
             return $$res;
         });
     }
-    matchoptionalArgsRest($$dpth, $$cr) {
+    matchindexList_$0_$0($$dpth, $$cr) {
         return this.run($$dpth, () => {
+            let $scope$sep;
             let $scope$item;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
+                && ($scope$sep = this.matchoperandSep($$dpth + 1, $$cr)) !== null
                 && (($scope$item = this.matchexp($$dpth + 1, $$cr)) || true)) {
-                $$res = { kind: ASTKinds.optionalArgsRest, item: $scope$item };
+                $$res = { kind: ASTKinds.indexList_$0_$0, sep: $scope$sep, item: $scope$item };
             }
             return $$res;
         });
     }
-    matchnamedArgs($$dpth, $$cr) {
+    matchfield($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$name;
+            let $scope$sep;
+            let $scope$value;
+            let $$res = null;
+            if (true
+                && ($scope$name = this.matchname($$dpth + 1, $$cr)) !== null
+                && ($scope$sep = this.matchnameValueSep($$dpth + 1, $$cr)) !== null
+                && ($scope$value = this.matchexp($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.field, name: $scope$name, sep: $scope$sep, value: $scope$value };
+            }
+            return $$res;
+        });
+    }
+    matchfieldList($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$content;
             let $$res = null;
             if (true
-                && (($scope$content = this.matchnamedArgs_$0($$dpth + 1, $$cr)) || true)) {
-                $$res = { kind: ASTKinds.namedArgs, content: $scope$content };
+                && (($scope$content = this.matchfieldList_$0($$dpth + 1, $$cr)) || true)) {
+                $$res = { kind: ASTKinds.fieldList, content: $scope$content };
             }
             return $$res;
         });
     }
-    matchnamedArgs_$0($$dpth, $$cr) {
+    matchfieldList_$0($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$firstName;
-            let $scope$firstExp;
+            let $scope$first;
             let $scope$rest;
             let $$res = null;
             if (true
-                && ($scope$firstName = this.matchname($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:=)`, $$dpth + 1, $$cr) !== null
-                && ($scope$firstExp = this.matchexp($$dpth + 1, $$cr)) !== null
-                && ($scope$rest = this.loop(() => this.matchnamedArgsRest($$dpth + 1, $$cr), true)) !== null) {
-                $$res = { kind: ASTKinds.namedArgs_$0, firstName: $scope$firstName, firstExp: $scope$firstExp, rest: $scope$rest };
+                && ($scope$first = this.matchfield($$dpth + 1, $$cr)) !== null
+                && ($scope$rest = this.loop(() => this.matchfieldList_$0_$0($$dpth + 1, $$cr), true)) !== null) {
+                $$res = { kind: ASTKinds.fieldList_$0, first: $scope$first, rest: $scope$rest };
             }
             return $$res;
         });
     }
-    matchnamedArgsRest($$dpth, $$cr) {
+    matchfieldList_$0_$0($$dpth, $$cr) {
         return this.run($$dpth, () => {
-            let $scope$name;
-            let $scope$value;
+            let $scope$sep;
+            let $scope$item;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
-                && this.regexAccept(String.raw `(?:,)`, $$dpth + 1, $$cr) !== null
-                && ($scope$name = this.matchname($$dpth + 1, $$cr)) !== null
-                && this.matchws($$dpth + 1, $$cr) !== null
+                && ($scope$sep = this.matchoperandSep($$dpth + 1, $$cr)) !== null
+                && ($scope$item = this.matchfield($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.fieldList_$0_$0, sep: $scope$sep, item: $scope$item };
+            }
+            return $$res;
+        });
+    }
+    matchnameValueSep($$dpth, $$cr) {
+        return this.run($$dpth, () => {
+            let $scope$before;
+            let $scope$after;
+            let $$res = null;
+            if (true
+                && ($scope$before = this.matchsep($$dpth + 1, $$cr)) !== null
                 && this.regexAccept(String.raw `(?:=)`, $$dpth + 1, $$cr) !== null
-                && ($scope$value = this.matchexp($$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.namedArgsRest, name: $scope$name, value: $scope$value };
+                && ($scope$after = this.matchsep($$dpth + 1, $$cr)) !== null) {
+                $$res = { kind: ASTKinds.nameValueSep, before: $scope$before, after: $scope$after };
             }
             return $$res;
         });
@@ -751,7 +1188,6 @@ class Parser {
             let $scope$to;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
                 && ($scope$from = this.mark()) !== null
                 && ($scope$value = this.regexAccept(String.raw `(?:[a-zA-Z][a-zA-Z0-9._]*)`, $$dpth + 1, $$cr)) !== null
                 && ($scope$to = this.mark()) !== null) {
@@ -760,20 +1196,16 @@ class Parser {
             return $$res;
         });
     }
-    matchnum($$dpth, $$cr) {
+    matchscalar($$dpth, $$cr) {
         return this.run($$dpth, () => {
             let $scope$value;
             let $$res = null;
             if (true
-                && this.matchws($$dpth + 1, $$cr) !== null
                 && ($scope$value = this.regexAccept(String.raw `(?:-?([\d]+([.][\d]+)?|([\d]+)?[.][\d]+)([eE]-?[\d]+)?)`, $$dpth + 1, $$cr)) !== null) {
-                $$res = { kind: ASTKinds.num, value: $scope$value };
+                $$res = { kind: ASTKinds.scalar, value: $scope$value };
             }
             return $$res;
         });
-    }
-    matchws($$dpth, $$cr) {
-        return this.regexAccept(String.raw `(?:(\s*([#][^\n]*[\n])?)*)`, $$dpth + 1, $$cr);
     }
     test() {
         const mrk = this.mark();

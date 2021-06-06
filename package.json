@@ -26,10 +26,13 @@
                     "OpenBUGS",
                     "openbugs"
                 ],
+                "extensions": [
+                    ".bugs"
+                ],
                 "filenamePatterns": [
                     "*model*.txt",
-                    "*data*.txt",
-                    "*inits*.txt"
+                    "*init*.txt",
+                    "*data*.txt"
                 ],
                 "configuration": "./language-configuration.json"
             }
@@ -54,7 +57,9 @@
         "watch": "tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "update-parser": "npx tspeg ./Grammar/bugs.peg ./src/parseBUGS.ts && cp ./src/parseBUGS.ts ./server/src/",
-        "test": "npx tsc -t ES2015 -m commonjs ./src/test/testParser.ts && node ./src/test/testParser.js"
+        "test": "npm run test-parser && npm run test-printer",
+        "test-parser": "npx tsc -t es2019 -m commonjs ./src/test/testParser.ts && node ./src/test/testParser.js",
+        "test-printer": "npx tsc -t es2019 -m commonjs ./src/test/testPrinter.ts && node ./src/test/testPrinter.js"
     },
     "devDependencies": {
         "@types/node": "^15.12.0",

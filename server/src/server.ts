@@ -13,11 +13,11 @@ import {
 	InitializeResult,
 	Position
 } from 'vscode-languageserver/node';
-import * as bugs from './BUGSKits';
-import * as PP from './prettyPrinter';
+import * as bugs from './BUGSKit';
 import {
 	TextDocument, TextEdit
 } from 'vscode-languageserver-textdocument';
+import { Seq } from './Seq';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -128,16 +128,18 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	documentContents.delete(textDocument.uri);
 	const parseResult = bugs.parse(text);
 	if (parseResult.kind === 'error') {
-		const parseDiagnostic: Diagnostic = {
-			severity: DiagnosticSeverity.Error,
-			range: {
-				start: parseResult.content,
-				end: parseResult.content
-			},
-			message: "parse error",
-			source: 'parser'
-		};
-		diagnostics.push(parseDiagnostic);
+		for (const err of parseResult.content) {
+			const parseDiagnostic: Diagnostic = {
+				severity: DiagnosticSeverity.Error,
+				range: {
+					start: err.position,
+					end: err.position,
+				},
+				message: err.message,
+				source: 'OpenBUGS VSCode Extension'
+			};
+			diagnostics.push(parseDiagnostic);
+		}
 	} else {
 		documentContents.set(textDocument.uri, parseResult.content);
 	}
@@ -149,126 +151,12 @@ connection.onDidChangeWatchedFiles(_change => {
 	connection.console.log('We received an file change event');
 });
 
-function intersperse<A>(a: A, as: Array<A>): Array<A> {
-	if (as.length === 0) {
-		return as;
-	} else {
-		const bs: Array<A> = [];
-		bs.push(as[0]);
-		for (let i = 0; i < as.length; i++) {
-			bs.push(a);
-			bs.push(as[i]);
-		}
-		return bs;
-	}
-}
-
-function prettyPrint(p: bugs.Program): string {
-	return "";
-	function pName(name: bugs.Name): PP.Doc {
-		return PP.text(name.literal);
-	}
-	function pExp(exp: bugs.Expression): PP.Doc {
-		if (exp.kind === 'variable') {
-			return pName(exp.name);
-		} else if (exp.kind === 'scalar') {
-			return PP.text(exp.literal)
-		} else if (exp.kind === 'application') {
-			return PP.hbox([
-				pName(exp.operator),
-				PP.text("("),
-				PP.hbox(intersperse(PP.text(", "), exp.operands.map(pExp))),
-				PP.text(")"),
-			])
-		} else if (exp.kind === 'subscription') {
-			return PP.hbox([
-				pName(exp.operator),
-				PP.text("["),
-				PP.hbox(intersperse(PP.text(", "), exp.operands.map(pExp))),
-				PP.text("]"),
-			])
-		} else if (exp.kind === 'binop') {
-			return PP.hbox([
-				pExp(exp.lft),
-				PP.text(exp.operator),
-				pExp(exp.rht)
-			])
-		} else if (exp.kind === 'structure') {
-			return PP.vbox([
-				PP.text("structure("),
-				PP.indent(PP.vbox([
-					PP.hbox([PP.text(".Data="), pExp(exp.data)]),
-					PP.hbox([PP.text(".Dim="), pExp(exp.dim)])
-				])),
-				PP.text(")")
-			])
-		} else if (exp.kind === 'list') {
-			return PP.hbox([
-				PP.text("list("),
-				PP.hbox(intersperse(PP.text(", "), exp.content.map(([name, exp]) => {
-					return PP.hbox([
-						pName(name),
-						PP.text("="),
-						pExp(exp)
-					])
-				}))),
-				PP.text(")"),
-			])
-		} else {
-			return PP.hbox([
-				PP.text("("),
-				pExp(exp.content),
-				PP.text(")"),
-			])
-		}
-	}
-	function pRelation(rel: bugs.Relation): PP.Doc {
-		if (rel.kind === 'for') {
-			return PP.vbox([
-				PP.hbox([
-					PP.text("for ("),
-					pName(rel.name),
-					PP.text(" in "),
-					pExp(rel.domain),
-					PP.text(") {")
-				]),
-				PP.indent(PP.vbox(rel.body.map(pRelation))),
-				PP.text("}")
-			])
-		} else if (rel.kind === "=") {
-			return PP.hbox([pExp(rel.lhs), PP.text("<-"), pExp(rel.rhs)])
-		} else {
-			return PP.hbox([pExp(rel.lhs), PP.text("~"), pExp(rel.rhs)])
-		}
-	}
-	function pList(list: bugs.List): PP.Doc {
-		return PP.hbox([PP.text("list("), PP.hbox(list.content.map(([name, exp]) => {
-			return PP.hbox([pName(name), pExp(exp)])
-		}))])
-	}
-	function pSession(s: bugs.Session): PP.Doc {
-		return PP.vbox([
-			PP.hbox([PP.text(s.kind), PP.text(" {")]),
-			PP.indent(PP.vbox(s.body.map(pRelation))),
-			PP.text("}")
-		])
-	}
-	function pProgram(p: bugs.Program): PP.Doc {
-		if (p.kind === 'data') {
-			return pList(p.content)
-		} else {
-			return PP.vbox(p.content.map(pSession))
-		}
-	}
-	return PP.stringOfDoc(pProgram(p));
-}
-
 connection.onDocumentFormatting(
 	(params, token, workDoneProgress, resultProgress) => {
 		const { textDocument: { uri }, options } = params;
 		const term = documentContents.get(uri);
 		if (term) {
-			const formattedText = prettyPrint(term);
+			const formattedText = bugs.prettyPrint(term);
 			const result: TextEdit[] = [];
 			result.push({
 				range: {
@@ -282,11 +170,6 @@ connection.onDocumentFormatting(
 			return [];
 		}
 	});
-
-
-function positionBefore(p1: Position, p2: Position) {
-	return (p1.line < p2.line) || (p1.line == p2.line && p1.character <= p2.character);
-}
 
 // This handler provides the initial list of the completion items.
 connection.onCompletion(
