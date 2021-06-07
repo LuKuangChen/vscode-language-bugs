@@ -449,6 +449,7 @@ class Parser {
                 && this.regexAccept(String.raw `(?:[,])`, $$dpth + 1, $$cr) !== null
                 && this.matchsep($$dpth + 1, $$cr) !== null
                 && (($scope$upper = this.matchexp($$dpth + 1, $$cr)) || true)
+                && this.matchsep($$dpth + 1, $$cr) !== null
                 && this.regexAccept(String.raw `(?:[)])`, $$dpth + 1, $$cr) !== null) {
                 $$res = { kind: ASTKinds.cti, header: $scope$header, lower: $scope$lower, upper: $scope$upper };
             }

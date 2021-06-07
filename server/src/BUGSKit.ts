@@ -3,8 +3,10 @@ import { intersperse, line } from 'prettier-printer';
 import { ppid } from 'process';
 import { Position } from 'vscode-languageserver';
 import * as PETParse from './parseBUGS';
-import * as PP from './prettyPrinter';
+import { Doc, makePrinter } from './prettyPrinter';
 import { Seq } from './Seq';
+
+const PP = makePrinter('    ')
 
 interface ParseError {
 	position: Position;
@@ -160,14 +162,14 @@ function transformProgram(program: PETParse.program): Program {
 			}
 		}
 	}
-	function tSepItem(sep: PETParse.sepItem): Array<Seperator> {
+	function tSepItem(sep: PETParse.sepItem): Array<SeperatorItem> {
 		if (sep.kind === 'newline') {
 			return [tNewline(sep)]
 		} else {
 			return [tComment(sep)];
 		}
 	}
-	function tRelationSep(sep: PETParse.relationSep): Array<Seperator> {
+	function tRelationSep(sep: PETParse.relationSep): Array<SeperatorItem> {
 		return sep.body.flatMap(({ sep, item }) => {
 			if (item.kind === 'relationSepItem_2') {
 				return []
@@ -177,14 +179,18 @@ function transformProgram(program: PETParse.program): Program {
 		})
 	}
 	function tBlock(block: PETParse.block): Block {
-		const blockItems: Block = [];
-		blockItems.push(...tRelationSep(block.before))
-		blockItems.push(tRelation(block.body.head));
-		blockItems.push(...block.body.tail.flatMap(({ sep, item }) => {
-			return [...tRelationSep(sep), tRelation(item)]
+		const relations: Relation[] = [];
+		const seperators: SeperatorItem[][] = [];
+		seperators.push(tRelationSep(block.before))
+		relations.push(tRelation(block.body.head));
+		seperators.push(...block.body.tail.map(({ sep, item }) => {
+			return tRelationSep(sep)
 		}));
-		blockItems.push(...tRelationSep(block.after))
-		return blockItems;
+		relations.push(...block.body.tail.map(({ sep, item }) => {
+			return tRelation(item)
+		}));
+		seperators.push(tRelationSep(block.after))
+		return { relations, seperators };
 	}
 	function tScalar(scalar: PETParse.scalar): Scalar {
 		return { kind: 'scalar', literal: scalar.value }
@@ -198,10 +204,10 @@ function transformProgram(program: PETParse.program): Program {
 			'body': tBlock(section.body)
 		}
 	}
-	function tNewline(x: PETParse.newline): Seperator {
+	function tNewline(x: PETParse.newline): SeperatorItem {
 		return { kind: 'newline' };
 	}
-	function tComment(x: PETParse.comment): Seperator {
+	function tComment(x: PETParse.comment): SeperatorItem {
 		return { kind: 'comment', content: x.content }
 	}
 	function tProgramBody(program: PETParse.programBody): List | TableProgram | ModelProgram {
@@ -236,9 +242,9 @@ function transformProgram(program: PETParse.program): Program {
 }
 
 export interface Program {
-	before: Array<Seperator>;
+	before: Array<SeperatorItem>;
 	body: ProgramBody;
-	after: Array<Seperator>;
+	after: Array<SeperatorItem>;
 }
 
 export type ProgramBody = List | TableProgram | ModelProgram;
@@ -253,14 +259,16 @@ export interface ModelProgram {
 	content: Array<Section>;
 }
 
-export const isNewline = (w: Seperator) => {
+export const isNewline = (w: SeperatorItem) => {
 	return w.kind === 'newline';
 }
 
-export type Block = Array<BlockItem>
-export type BlockItem = Relation | Seperator
+export interface Block {
+	relations: Relation[];
+	seperators: SeperatorItem[][];
+}
 
-export type Seperator = Newline | Comment
+export type SeperatorItem = Newline | Comment
 export interface Newline {
 	kind: 'newline'
 }
@@ -361,7 +369,7 @@ export interface ParenthesizedExpression {
 }
 
 export function prettyPrint(p: Program): string {
-	function pName(name: Name): PP.Doc {
+	function pName(name: Name): Doc {
 		return PP.text(name.literal);
 	}
 	const pExpNullable = (e: Expression | null) => {
@@ -371,30 +379,30 @@ export function prettyPrint(p: Program): string {
 			return pExp(e);
 		}
 	}
-	function pScalar(scalar: Scalar): PP.Doc {
+	function pScalar(scalar: Scalar): Doc {
 		return PP.text(scalar.literal)
 	}
-	function pExp(exp: Expression): PP.Doc {
+	function pExp(exp: Expression): Doc {
 		if (exp.kind === 'variable') {
 			return pName(exp.name);
 		} else if (exp.kind === 'scalar') {
 			return pScalar(exp)
 		} else if (exp.kind === 'application') {
-			return PP.fcatIndent([
+			return PP.fconcat([
 				pExp(exp.operator),
 				PP.text("("),
-				PP.fcatIndent(Seq.intersperse(PP.text(", "), exp.operands.map(pExp))),
+				PP.fconcat(Seq.intersperse(PP.text(", "), exp.operands.map(pExp))),
 				PP.text(")"),
 			])
 		} else if (exp.kind === 'subscription') {
-			return PP.fcatIndent([
+			return PP.fconcat([
 				pExp(exp.operator),
 				PP.text("["),
-				PP.fcatIndent(Seq.intersperse(PP.text(", "), exp.operands.map(pExpNullable))),
+				PP.fconcat(Seq.intersperse(PP.text(", "), exp.operands.map(pExpNullable))),
 				PP.text("]"),
 			])
 		} else if (exp.kind === 'binop') {
-			return PP.fcatIndent([
+			return PP.fconcat([
 				pExp(exp.lft),
 				PP.text(' '),
 				PP.text(exp.operator),
@@ -402,28 +410,28 @@ export function prettyPrint(p: Program): string {
 				pExp(exp.rht)
 			])
 		} else if (exp.kind === 'unop') {
-			return PP.fcatIndent([
+			return PP.fconcat([
 				PP.text(exp.operator),
 				PP.text(' '),
 				pExp(exp.exp)
 			])
 		} else if (exp.kind === 'structure') {
-			return PP.lines([
+			return PP.vconcat([
 				PP.text("structure("),
-				PP.indent(PP.lines([
-					PP.fcat([
-						PP.fcatIndent([PP.text(".Data="), pExp(exp.data)]),
+				PP.nest(PP.vconcat([
+					PP.fconcat([
+						PP.fconcat([PP.text(".Data="), pExp(exp.data)]),
 						PP.text(',')
 					]),
-					PP.fcatIndent([PP.text(".Dim="), pExp(exp.dim)])
+					PP.fconcat([PP.text(".Dim="), pExp(exp.dim)])
 				])),
 				PP.text(")")
 			])
 		} else if (exp.kind === 'list') {
-			return PP.fcatIndent([
+			return PP.fconcat([
 				PP.text("list("),
-				PP.fcatIndent(Seq.intersperse(PP.text(", "), exp.content.map(([name, exp]) => {
-					return PP.fcatIndent([
+				PP.fconcat(Seq.intersperse(PP.text(", "), exp.content.map(([name, exp]) => {
+					return PP.fconcat([
 						pName(name),
 						PP.text("="),
 						pExp(exp)
@@ -432,18 +440,18 @@ export function prettyPrint(p: Program): string {
 				PP.text(")"),
 			])
 		} else {
-			return PP.fcatIndent([
+			return PP.fconcat([
 				PP.text("("),
 				pExp(exp.content),
 				PP.text(")"),
 			])
 		}
 	}
-	function pCTI(cti: StochasticRelation['cti']): PP.Doc {
+	function pCTI(cti: StochasticRelation['cti']): Doc {
 		if (cti === null) {
 			return PP.text("")
 		} else {
-			return PP.fcatIndent([
+			return PP.fconcat([
 				PP.text(cti.kind),
 				PP.text('('),
 				pExpNullable(cti.lower),
@@ -453,66 +461,111 @@ export function prettyPrint(p: Program): string {
 			])
 		}
 	}
-	function pComment(cmt: Comment): PP.Doc {
-		return PP.lines([
-			PP.text("#" + cmt.content),
-			PP.text('')
-		])
+	function pComment(cmt: Comment): Doc {
+		return PP.text("#" + cmt.content)
 	}
-	function pSeperator(item: Seperator): PP.Doc {
+	function pSeperator(item: SeperatorItem): Doc {
 		if (item.kind === 'newline') {
-			return PP.lines([PP.text(""), PP.text("")])
+			return PP.text("")
 		} else {
 			return pComment(item)
 		}
 	}
-	function pSeperators(seps: Array<Seperator>): Array<PP.Doc> {
+	function pSeperators(seps: Array<SeperatorItem>): Array<Doc> {
 		return seps.map(pSeperator)
 	}
-	function pBlock(block: Block): PP.Doc {
-		let fromItem = 0;
-		let toItem = block.length;
-		// skip beginning newlines
-		while (block[fromItem].kind === 'newline') {
-			fromItem++;
+	function pBlock(block: Block): Doc {
+		type SimpleRelation = StochasticRelation | DeterministicRelation;
+		type BlockSection = SimpleRelationSection | IndexedRelation | SeperatorSection;
+		interface SimpleRelationSection {
+			kind: 'srs';
+			rels: { r: SimpleRelation, c?: Comment }[];
 		}
-		// skip ending newlines
-		while (block[toItem - 1].kind === 'newline') {
-			toItem--;
+		interface SeperatorSection {
+			kind: 'ss';
+			sep: SeperatorItem[];
 		}
-		block = block.slice(fromItem, toItem)
-		return PP.fcat(block.map((item) => {
-			if (item.kind === 'newline' || item.kind === 'comment') {
-				return pSeperator(item)
+		function group(block: Block): BlockSection[] {
+			const result: BlockSection[] = [];
+			function pushSep(sep: SeperatorItem[]) {
+				if (sep.length > 0 && sep[0].kind === 'newline') {
+					sep = sep.slice(1)
+				}
+				if (sep.length > 0) {
+					result.push({ kind: 'ss', sep })
+				}
+			}
+			pushSep(block.seperators[0])
+			for (let i = 0; i < block.relations.length; i++) {
+				const r = block.relations[i];
+				let c = block.seperators[i + 1];
+				if (r.kind === 'for') {
+					result.push(r)
+					pushSep(c)
+				} else {
+					const last = result.length > 0 ? result[result.length - 1] : undefined;
+					let lastSrs: SimpleRelationSection;
+					if (last !== undefined && last.kind === 'srs') {
+						last.rels.push({ r })
+						lastSrs = last;
+					} else {
+						lastSrs = { kind: 'srs', rels: [{ r }] }
+						result.push(lastSrs)
+					}
+					if (c.length > 0 && c[0].kind === 'comment') {
+						lastSrs.rels[lastSrs.rels.length - 1].c = c[0]
+						c[0] = { kind: 'newline' }
+					}
+					pushSep(c)
+				}
+			}
+			return result;
+		}
+		const blockSections = group(block);
+		return PP.vconcat(blockSections.map((bc) => {
+			if (bc.kind === 'for') {
+				return pRelation(bc)
+			} else if (bc.kind === 'srs') {
+				return PP.equations(bc.rels.map(({ r, c }) => {
+					let suffix = (c === undefined
+						? PP.text('')
+						: PP.fconcat([PP.text(' '), pComment(c)]))
+					if (r.kind === '=') {
+						return [pExp(r.lhs), ' <- ', PP.fconcat([pExp(r.rhs), suffix])]
+					} else {
+						suffix = PP.fconcat([pCTI(r.cti), suffix])
+						return [pExp(r.lhs), ' ~ ', PP.fconcat([pExp(r.rhs), suffix])]
+					}
+				}))
 			} else {
-				return pRelation(item)
+				return PP.vconcat(pSeperators(bc.sep))
 			}
 		}))
 	}
-	function pRelation(rel: Relation): PP.Doc {
+	function pRelation(rel: Relation): Doc {
 		if (rel.kind === 'for') {
-			return PP.lines([
-				PP.fcatIndent([
+			return PP.vconcat([
+				PP.fconcat([
 					PP.text("for ("),
 					pName(rel.name),
 					PP.text(" in "),
 					pExp(rel.domain),
 					PP.text(") {")
 				]),
-				PP.indent(pBlock(rel.body)),
+				PP.nest(pBlock(rel.body)),
 				PP.text("}")
 			])
 		} else if (rel.kind === "=") {
-			return PP.lines([
-				PP.fcatIndent([
+			return PP.vconcat([
+				PP.fconcat([
 					pExp(rel.lhs),
 					PP.text(' <- '),
 					pExp(rel.rhs),
 				]),
 			])
 		} else {
-			return PP.lines([
-				PP.fcatIndent([
+			return PP.vconcat([
+				PP.fconcat([
 					pExp(rel.lhs),
 					PP.text(' ~ '),
 					pExp(rel.rhs),
@@ -521,58 +574,55 @@ export function prettyPrint(p: Program): string {
 			])
 		}
 	}
-	function pList(list: List): PP.Doc {
-		return PP.fcat([
+	function pList(list: List): Doc {
+		return PP.fconcat([
 			PP.text("list("),
 			...Seq.intersperse(
 				PP.text(', '),
 				list.content.map(([name, exp]) => {
-					return PP.fcat([pName(name), PP.text(' = '), pExp(exp)])
+					return PP.fconcat([pName(name), PP.text(' = '), pExp(exp)])
 				})),
 			PP.text(')')
 		])
 	}
-	function pSection(s: Section): PP.Doc {
-		return PP.lines([
-			PP.fcatIndent([
+	function pSection(s: Section): Doc {
+		return PP.vconcat([
+			PP.vconcat([
 				PP.text(s.kind),
-				PP.text(" {"),
+				PP.text("{"),
 			]),
-			PP.indent(pBlock(s.body)),
-			PP.fcatIndent([PP.text("}")])
+			PP.nest(pBlock(s.body)),
+			PP.fconcat([PP.text("}")])
 		])
 	}
-	function pProgram(p: Program): PP.Doc {
+	function pProgram(p: Program): Doc {
 		let before = p.before;
-		while (before.length > 0 && before[0].kind === 'newline') {
-			before = before.slice(1)
-		}
 		let after = p.after;
 		while (after.length > 0 && after[after.length - 1].kind === 'newline') {
 			after = after.slice(0, -1)
 		}
-		return PP.lines([
+		return PP.vconcat([
 			...pSeperators(before),
 			pProgramBody(p.body),
 			...pSeperators(after)
 		])
 	}
-	function pProgramBody(p: ProgramBody): PP.Doc {
+	function pProgramBody(p: ProgramBody): Doc {
 		if (p.kind === 'list') {
 			return pList(p)
 		} if (p.kind === 'table') {
-			return PP.lines([
-				PP.fcat(Seq.intersperse(PP.text(' '), p.header.map(pName))),
-				PP.lines(
+			return PP.vconcat([
+				PP.fconcat(Seq.intersperse(PP.text(' '), p.header.map((name) => PP.fconcat([pName(name), PP.text('[]')])))),
+				PP.vconcat(
 					p.body.map((row) => {
-						return PP.fcat(Seq.intersperse(PP.text(' '), row.map(pScalar)))
+						return PP.fconcat(Seq.intersperse(PP.text(' '), row.map(pScalar)))
 					})
 				),
 				PP.text('END')
 			])
 		} else {
-			return PP.lines(p.content.map(pSection))
+			return PP.vconcat(p.content.map(pSection))
 		}
 	}
-	return PP.stringOfDoc(pProgram(p), '\t');
+	return PP.toString(pProgram(p));
 }

@@ -2,12 +2,14 @@
 
 ## Features
 
-- autocompletion for BUGS built-in [scalar and vector functions](https://www.multibugs.org/documentation/latest/Functions.html) and [distributions](https://www.multibugs.org/documentation/latest/Distributions.html)
+- autocompletion, supporting
+  - [built-in scalar and vector functions](https://www.multibugs.org/documentation/latest/Functions.html), and
+  - [built-in distributions](https://www.multibugs.org/documentation/latest/Distributions.html)
 - reformat
 
 ## Known issues
 
-- Supports for data files and init files are limited.
+- Some comments might be lost in reformat. This usually happens in data and init files.
 
 # Raw
 

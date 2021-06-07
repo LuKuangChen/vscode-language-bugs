@@ -16,13 +16,19 @@ const testParseFile = (filepath: string) => {
 		}
 		const program = parseResult.content;
 		function normalize(sourceCode: string): string {
-			return sourceCode.replace(/[\s;]/g, '')
+			return sourceCode.replace(/[#][^\n]*/g, '').replace(/[\s;]/g, '')
 		}
 		const before = normalize(fileContent);
 		try {
 			const after = normalize(bugs.prettyPrint(program));
 			if (before !== after) {
 				console.log('Print Error: lost some info', filepath)
+				let firstDiff = 0;
+				while (before[firstDiff] === after[firstDiff]) {
+					firstDiff ++;
+				}
+				console.log("From", before.slice(firstDiff, firstDiff + 10))
+				console.log("To  ", after.slice(firstDiff, firstDiff + 10))
 				return;
 			}
 			// console.log('Passed.')
@@ -38,6 +44,8 @@ const pathToTestPrograms = join(__dirname, '../../test programs/');
 fs.readdir(pathToTestPrograms, (err, files) => {
 	if (err) throw err;
 	for (const file of files) {
-		testParseFile(join(pathToTestPrograms, file));
+		if (file.endsWith('txt')) {
+			testParseFile(join(pathToTestPrograms, file));
+		}
 	}
 })

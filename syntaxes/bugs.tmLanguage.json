@@ -33,8 +33,12 @@
 					"match": "\\b(model|data|END)\\b"
 				},
 				{
-					"name": "keyword.operator",
+					"name": "keyword.operator.bugs",
 					"match": "\\b(list|structure|c)\\b"
+				},
+				{
+					"name": "keyword.operator.bugs",
+					"match": "~|<-"
 				}
 			]
 		},
