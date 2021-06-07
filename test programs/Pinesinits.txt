@@ -1,1 +1,0 @@
-list(j = 2, tau = c(1,1), alpha = 0, beta = 0, gamma = 0, delta = 0)

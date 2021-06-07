@@ -1,1 +1,0 @@
-list(beta = 2)

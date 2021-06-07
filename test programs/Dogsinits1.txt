@@ -1,1 +1,0 @@
-list(alpha = -2, beta = -2)

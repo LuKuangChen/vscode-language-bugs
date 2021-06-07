@@ -1,1 +1,0 @@
-list(alpha = 1.0, beta = 1.0, gamma = 0.01, tau = 1.0)

@@ -1,1 +1,0 @@
-list(delta = 2, alpha = 2)

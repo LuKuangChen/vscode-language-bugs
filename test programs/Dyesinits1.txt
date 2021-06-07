@@ -1,1 +1,0 @@
-list(theta=3000, tau.with=0.1, tau.btw=0.1)
