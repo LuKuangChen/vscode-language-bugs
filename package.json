@@ -2,16 +2,24 @@
     "name": "openbugs",
     "version": "0.0.1",
     "publisher": "LuKC1024",
-    "displayName": "OpenBUGS",
-    "description": "OpenBUGS Language Support",
     "engines": {
         "vscode": "^1.56.0"
     },
+    "license": "MIT",
+    "displayName": "OpenBUGS",
+    "description": "OpenBUGS Language Support",
     "categories": [
         "Programming Languages",
         "Snippets",
         "Formatters"
     ],
+    "keywords": [
+        "BUGS", "OpenBUGS", "WinBUGS", "MultiBUGS", "JAGS"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LuKC1024/vscode-language-bugs"
+    },
     "activationEvents": [
         "onLanguage:bugs"
     ],
