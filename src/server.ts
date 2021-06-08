@@ -125,6 +125,22 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
+function locateOpenBugsOnWindows(): string | null {
+	const drives = ['c', 'd', 'e', 'f'];
+	for (const drive of drives) {
+		const openBugsPath = `${drive}:\\Program Files\\OpenBUGS`
+		if (fs.existsSync(openBugsPath)) {
+			const versions = fs.readdirSync(openBugsPath)
+			for (const version of versions) {
+				if (version.startsWith('OpenBUGS')) {
+					return `${drive}:\\Program Files\\OpenBUGS\\${version}\\OpenBUGS.exe`
+				}
+			}
+		}
+	}
+	return null
+}
+
 function execModelCheck(path: string): string {
 	// run OpenBUGS modelCheck depending on the os
 	let command;
@@ -134,8 +150,11 @@ function execModelCheck(path: string): string {
 			`modelCheck("${path}")`,
 			`modelQuit("yes")`
 		].join(os.EOL))
-		const FULLPATH = "";
-		command =  `"${FULLPATH}/OpenBUGS.exe" /PAR "${FULLPATH}/ScriptName.txt" /HEADLESS`
+		const FULLPATH = locateOpenBugsOnWindows();
+		if (FULLPATH === null) {
+			return "Cannot find OpenBUGS installation error pos 0."
+		}
+		command = `"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptFile.name}" /HEADLESS`
 	} else {
 		command = `echo 'modelCheck("${path}")' | OpenBUGS`
 	}
