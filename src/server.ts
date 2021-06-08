@@ -143,22 +143,26 @@ function locateOpenBugsOnWindows(): string | null {
 
 function execModelCheck(modelPath: string): string {
 	// run OpenBUGS modelCheck depending on the os
-	if (os.platform() === 'win32') {
+	if (os.platform() !== 'win32') {
 		const scriptPath: string = tmp.fileSync().name;
 		const logPath: string = tmp.fileSync().name;
+		// const scriptPath: string = "c:\\Users\\user\\Desktop\\script.txt"
+		// const logPath: string = "c:\\Users\\user\\Desktop\\log.txt";
 		const scriptContent = [
 			`modelDisplay('log')`,
-			`modelCheck('${modelPath.replace('\\', '/')}')`,
-			`modelSaveLog('${logPath.replace('\\', '/')}')`,
-			`modelQuit("yes")`
+			`modelCheck('${modelPath.replace(/\\/g, '/')}')`,
+			`modelSaveLog('${logPath.replace(/\\/g, '/')}')`,
+			`modelQuit('yes')`
 		].join(os.EOL)
 		fs.writeFileSync(scriptPath, scriptContent)
 		const FULLPATH = locateOpenBugsOnWindows();
+		// const FULLPATH = `c:\\Program Files\\OpenBUGS\\OpenBUGS323`
 		if (FULLPATH === null) {
 			return "Cannot find OpenBUGS installation error pos 0."
 		}
-		return `script: ${scriptContent}\ncommand: "${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS error pos0`;
-		execSync(`"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS`)
+		const command = `"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace(/\\/g, '/')}" /HEADLESS`
+		// return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
+		execSync(`${command}`)
 		return fs.readFileSync(logPath).toString()
 	} else {
 		return execSync(`echo 'modelCheck("${modelPath}")' | OpenBUGS`).toString()
