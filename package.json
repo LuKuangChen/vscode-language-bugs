@@ -54,7 +54,7 @@
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "npm run compileParser && tsc -b",
-        "watch": "npm run compile-parser && tsc -b -w",
+        "watch": "npm run compileParser && tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "compileParser": "npx tspeg ./src/bugs.peg ./server/src/bugsPeg.ts",
         "test": "npm run compile && node ./out/test.js"

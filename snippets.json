@@ -35,7 +35,7 @@
 		"prefix": "structure(.Data=c(), .Dim=c())",
 		"body": [
 			"structure(",
-			"  .Data=c(${1:})",
+			"  .Data=c(${1:}),",
 			"  .Dim=c(${2:})",
 			")"
 		]
@@ -59,473 +59,473 @@
 		]
 	},
 	"Bernoulli": {
-		"prefix": "dbern",
+		"prefix": "dbern(p)",
 		"body": [
 			"dbern(${1:p})"
 		]
 	},
 	"Binomial": {
-		"prefix": "dbin",
+		"prefix": "dbin(p, n)",
 		"body": [
 			"dbin(${1:p}, ${2:n})"
 		]
 	},
 	"Categorical": {
-		"prefix": "dcat",
+		"prefix": "dcat(p[])",
 		"body": [
 			"dcat(${1:p[]})"
 		]
 	},
 	"Negative Binomial": {
-		"prefix": "dnegbin",
+		"prefix": "dnegbin(p, r)",
 		"body": [
 			"dnegbin(${1:p}, ${2:r})"
 		]
 	},
 	"Poisson": {
-		"prefix": "dpois",
+		"prefix": "dpois(lambda)",
 		"body": [
 			"dpois(${1:lambda})"
 		]
 	},
 	"Geometric": {
-		"prefix": "dgeom",
+		"prefix": "dgeom(p)",
 		"body": [
 			"dgeom(${1:p})"
 		]
 	},
 	"Geometric (alternative form)": {
-		"prefix": "dgeom0",
+		"prefix": "dgeom0(p)",
 		"body": [
 			"dgeom0(${1:p})"
 		]
 	},
 	"Non-central Hypergeometric": {
-		"prefix": "dhyper",
+		"prefix": "dhyper(n, m, N, psi)",
 		"body": [
 			"dhyper(${1:n}, ${2:m}, ${3:N}, ${4:psi})"
 		]
 	},
 	"Beta": {
-		"prefix": "dbeta",
+		"prefix": "dbeta(a, b)",
 		"body": [
 			"dbeta(${1:a}, ${2:b})"
 		]
 	},
 	"Chi-squared": {
-		"prefix": "dchisqr",
+		"prefix": "dchisqr(k)",
 		"body": [
 			"dchisqr(${1:k})"
 		]
 	},
 	"Double Exponential": {
-		"prefix": "ddexp",
+		"prefix": "ddexp(mu, tau)",
 		"body": [
 			"ddexp(${1:mu}, ${2:tau})"
 		]
 	},
 	"Exponential": {
-		"prefix": "dexp",
+		"prefix": "dexp(lambda)",
 		"body": [
 			"dexp(${1:lambda})"
 		]
 	},
 	"Flat": {
-		"prefix": "dflat",
+		"prefix": "dflat()",
 		"body": [
 			"dflat(${1:})"
 		]
 	},
 	"Gamma": {
-		"prefix": "dgamma",
+		"prefix": "dgamma(r, mu)",
 		"body": [
 			"dgamma(${1:r}, ${2:mu})"
 		]
 	},
 	"Generalized Extreme Value": {
-		"prefix": "dgev",
+		"prefix": "dgev(mu, sigma, eta)",
 		"body": [
 			"dgev(${1:mu}, ${2:sigma}, ${3:eta})"
 		]
 	},
 	"Generalized F": {
-		"prefix": "df",
+		"prefix": "df(n, m, mu, tau)",
 		"body": [
 			"df(${1:n}, ${2:m}, ${3:mu}, ${4:tau})"
 		]
 	},
 	"Generalized Gamma": {
-		"prefix": "dggamma",
+		"prefix": "dggamma(r, mu, beta)",
 		"body": [
 			"dggamma(${1:r}, ${2:mu}, ${3:beta})"
 		]
 	},
 	"Generalized Pareto": {
-		"prefix": "dgpar",
+		"prefix": "dgpar(mu, sigma, eta)",
 		"body": [
 			"dgpar(${1:mu}, ${2:sigma}, ${3:eta})"
 		]
 	},
 	"Generic LogLikelihood Distribution": {
-		"prefix": "dloglik",
+		"prefix": "dloglik(lambda)",
 		"body": [
 			"dloglik(${1:lambda})"
 		]
 	},
 	"Log-normal": {
-		"prefix": "dlnorm",
+		"prefix": "dlnorm(mu, tau)",
 		"body": [
 			"dlnorm(${1:mu}, ${2:tau})"
 		]
 	},
 	"Logistic": {
-		"prefix": "dlogis",
+		"prefix": "dlogis(mu, tau)",
 		"body": [
 			"dlogis(${1:mu}, ${2:tau})"
 		]
 	},
 	"Normal": {
-		"prefix": "dnorm",
+		"prefix": "dnorm(mu, tau)",
 		"body": [
 			"dnorm(${1:mu}, ${2:tau})"
 		]
 	},
 	"Pareto": {
-		"prefix": "dpar",
+		"prefix": "dpar(alpha, c)",
 		"body": [
 			"dpar(${1:alpha}, ${2:c})"
 		]
 	},
 	"Student-t": {
-		"prefix": "dt",
+		"prefix": "dt(mu, tau, k)",
 		"body": [
 			"dt(${1:mu}, ${2:tau}, ${3:k})"
 		]
 	},
 	"Uniform": {
-		"prefix": "dunif",
+		"prefix": "dunif(a, b)",
 		"body": [
 			"dunif(${1:a}, ${2:b})"
 		]
 	},
 	"Weibull": {
-		"prefix": "dweib",
+		"prefix": "dweib(v, lambda)",
 		"body": [
 			"dweib(${1:v}, ${2:lambda})"
 		]
 	},
 	"Multinomial": {
-		"prefix": "dmulti",
+		"prefix": "dmulti(p[], N)",
 		"body": [
 			"dmulti(${1:p[]}, ${2:N})"
 		]
 	},
 	"Dirichlet": {
-		"prefix": "ddirich",
+		"prefix": "ddirich(alpha[])",
 		"body": [
 			"ddirich(${1:alpha[]})"
 		]
 	},
 	"Multivariate Normal": {
-		"prefix": "dmnorm",
+		"prefix": "dmnorm(mu[], T[,])",
 		"body": [
 			"dmnorm(${1:mu[]}, ${2:T[,]})"
 		]
 	},
 	"Multivariate Student-t": {
-		"prefix": "dmt",
+		"prefix": "dmt(mu[], T[,], k)",
 		"body": [
 			"dmt(${1:mu[]}, ${2:T[,]}, ${3:k})"
 		]
 	},
 	"Wishart": {
-		"prefix": "dwish",
+		"prefix": "dwish(R[,], k)",
 		"body": [
 			"dwish(${1:R[,]}, ${2:k})"
 		]
 	},
 	"abs": {
-		"prefix": "abs",
+		"prefix": "abs(e)",
 		"body": "abs(${1:e})",
 		"description": "absolute value of e, |e|"
 	},
 	"arccos": {
-		"prefix": "arccos",
+		"prefix": "arccos(e)",
 		"body": "arccos(${1:e})",
 		"description": "inverse cosine of e"
 	},
 	"arccosh": {
-		"prefix": "arccosh",
+		"prefix": "arccosh(e)",
 		"body": "arccosh(${1:e})",
 		"description": "inverse hyperbolic cosine of e"
 	},
 	"arcsin": {
-		"prefix": "arcsin",
+		"prefix": "arcsin(e)",
 		"body": "arcsin(${1:e})",
 		"description": "inverse sine of e"
 	},
 	"arcsinh": {
-		"prefix": "arcsinh",
+		"prefix": "arcsinh(e)",
 		"body": "arcsinh(${1:e})",
 		"description": "inverse hyperbolic sine of e"
 	},
 	"arctan": {
-		"prefix": "arctan",
+		"prefix": "arctan(e)",
 		"body": "arctan(${1:e})",
 		"description": "inverse tangent of e"
 	},
 	"arctanh": {
-		"prefix": "arctanh",
+		"prefix": "arctanh(e)",
 		"body": "arctanh(${1:e})",
 		"description": "inverse hyperbolic tangent of e"
 	},
 	"cloglog": {
-		"prefix": "cloglog",
+		"prefix": "cloglog(e)",
 		"body": "cloglog(${1:e})",
 		"description": "complementary log log of e, ln(- ln(1 - e))"
 	},
 	"cos": {
-		"prefix": "cos",
+		"prefix": "cos(e)",
 		"body": "cos(${1:e})",
 		"description": "cosine of e"
 	},
 	"cosh": {
-		"prefix": "cosh",
+		"prefix": "cosh(e)",
 		"body": "cosh(${1:e})",
 		"description": "hyperbolic cosine of e"
 	},
 	"cumulative": {
-		"prefix": "cumulative",
+		"prefix": "cumulative(s1, s2)",
 		"body": "cumulative(${1:s1}, ${2:s2})",
 		"description": "tail area of distribution of s1 up to the value of s2, s1 must be stochastic, s1 and s2 can be the same"
 	},
 	"cut": {
-		"prefix": "cut",
+		"prefix": "cut(e)",
 		"body": "cut(${1:e})",
 		"description": "cuts edges in the graph."
 	},
 	"density": {
-		"prefix": "density",
+		"prefix": "density(s1, s2)",
 		"body": "density(${1:s1}, ${2:s2})",
 		"description": "density of distribution of s1 at value of s2, s1 must be a stochastic node supplied as data, s1 and s2 can be the same."
 	},
 	"deviance": {
-		"prefix": "deviance",
+		"prefix": "deviance(s1, s2)",
 		"body": "deviance(${1:s1}, ${2:s2})",
 		"description": "deviance of distribution of s1 at value of s2, s1 must be a stochastic node supplied as data, s1 and s2 can be the same."
 	},
 	"equals": {
-		"prefix": "equals",
+		"prefix": "equals(e1, e2)",
 		"body": "equals(${1:e1}, ${2:e2})",
 		"description": "1 if value of e 1 equals value of e 2; 0 otherwise"
 	},
 	"exp": {
-		"prefix": "exp",
+		"prefix": "exp(e)",
 		"body": "exp(${1:e})",
 		"description": "exp(e)"
 	},
 	"gammap": {
-		"prefix": "gammap",
+		"prefix": "gammap(s1, s2)",
 		"body": "gammap(${1:s1}, ${2:s2})",
 		"description": "partial (incomplete) gamma function, value of standard gamma density with parameter s1 integrated up to s2"
 	},
 	"ilogit": {
-		"prefix": "ilogit",
+		"prefix": "ilogit(e)",
 		"body": "ilogit(${1:e})",
 		"description": "exp(e) / (1 + exp(e))"
 	},
 	"icloglog": {
-		"prefix": "icloglog",
+		"prefix": "icloglog(e)",
 		"body": "icloglog(${1:e})",
 		"description": "1 - exp(- exp(e))"
 	},
 	"integral(F": {
-		"prefix": "integral(F",
+		"prefix": "integral(F(s), s1, s2, s3)",
 		"body": "integral(F(${1:F(s)}, ${2:s1}, ${3:s2}, ${4:s3})",
 		"description": "definite integral of function F(s) between s = s1 and s = s2 to accuracy s3"
 	},
 	"log": {
-		"prefix": "log",
+		"prefix": "log(e)",
 		"body": "log(${1:e})",
 		"description": "natural logarithm of e"
 	},
 	"logfact": {
-		"prefix": "logfact",
+		"prefix": "logfact(e)",
 		"body": "logfact(${1:e})",
 		"description": "ln(e!)"
 	},
 	"loggam": {
-		"prefix": "loggam",
+		"prefix": "loggam(e)",
 		"body": "loggam(${1:e})",
 		"description": "logarithm of gamma function of e"
 	},
 	"logit": {
-		"prefix": "logit",
+		"prefix": "logit(e)",
 		"body": "logit(${1:e})",
 		"description": "ln(e / (1 - e))"
 	},
 	"max": {
-		"prefix": "max",
+		"prefix": "max(e1, e2)",
 		"body": "max(${1:e1}, ${2:e2})",
 		"description": "e1 if e1 > e2; e2 otherwise"
 	},
 	"min": {
-		"prefix": "min",
+		"prefix": "min(e1, e2)",
 		"body": "min(${1:e1}, ${2:e2})",
 		"description": "e1 if e1 < e2; e2 otherwise"
 	},
 	"phi": {
-		"prefix": "phi",
+		"prefix": "phi(e)",
 		"body": "phi(${1:e})",
 		"description": "standard normal cdf"
 	},
 	"post.p.value": {
-		"prefix": "post.p.value",
+		"prefix": "post.p.value(s)",
 		"body": "post.p.value(${1:s})",
 		"description": "s must be a stochastic node, returns one if a sample from the prior is less than the value of s"
 	},
 	"pow": {
-		"prefix": "pow",
+		"prefix": "pow(e1, e2)",
 		"body": "pow(${1:e1}, ${2:e2})",
 		"description": "e1 ^ e2"
 	},
 	"prior.p.value": {
-		"prefix": "prior.p.value",
+		"prefix": "prior.p.value(s)",
 		"body": "prior.p.value(${1:s})",
 		"description": "s must be a stochastic node, returns one if a sample from the prior after resampling its stochastic parents is less than value of s."
 	},
 	"probit": {
-		"prefix": "probit",
+		"prefix": "probit(e)",
 		"body": "probit(${1:e})",
 		"description": "inverse of phi(e)"
 	},
 	"replicate.post": {
-		"prefix": "replicate.post",
+		"prefix": "replicate.post(s)",
 		"body": "replicate.post(${1:s})",
 		"description": "replicate from distribution of s, s must be stochastic node"
 	},
 	"replicate.prior": {
-		"prefix": "replicate.prior",
+		"prefix": "replicate.prior(s)",
 		"body": "replicate.prior(${1:s})",
 		"description": "replicate from distribution of s after replicating from it parents if they are stochastic, s must be stochastic node"
 	},
 	"round": {
-		"prefix": "round",
+		"prefix": "round(e)",
 		"body": "round(${1:e})",
 		"description": "nearest integer to e"
 	},
 	"sin": {
-		"prefix": "sin",
+		"prefix": "sin(e)",
 		"body": "sin(${1:e})",
 		"description": "sine of e"
 	},
 	"sinh": {
-		"prefix": "sinh",
+		"prefix": "sinh(e)",
 		"body": "sinh(${1:e})",
 		"description": "hyperbolic sine of e"
 	},
 	"solution(F": {
-		"prefix": "solution(F",
+		"prefix": "solution(F(s), s1, s2, s3)",
 		"body": "solution(F(${1:F(s)}, ${2:s1}, ${3:s2}, ${4:s3})",
 		"description": "a solution of equation F(s) = 0 lying between s = s1 and s = s2 to accuracy s3, s1 and s2 must bracket a solution"
 	},
 	"sqrt": {
-		"prefix": "sqrt",
+		"prefix": "sqrt(e)",
 		"body": "sqrt(${1:e})",
 		"description": "e ^ (1 / 2)"
 	},
 	"step": {
-		"prefix": "step",
+		"prefix": "step(e)",
 		"body": "step(${1:e})",
 		"description": "1 if e >= 0; 0 otherwise"
 	},
 	"tan": {
-		"prefix": "tan",
+		"prefix": "tan(e)",
 		"body": "tan(${1:e})",
 		"description": "tangent of e"
 	},
 	"tanh": {
-		"prefix": "tanh",
+		"prefix": "tanh(e)",
 		"body": "tanh(${1:e})",
 		"description": "hyperbolic tangent of e"
 	},
 	"trunc": {
-		"prefix": "trunc",
+		"prefix": "trunc(e)",
 		"body": "trunc(${1:e})",
 		"description": "greatest integer less than or equal to e"
 	},
 	"inprod": {
-		"prefix": "inprod",
+		"prefix": "inprod(v1, v2)",
 		"body": "inprod(${1:v1}, ${2:v2})",
 		"description": "inner product of v1 and v2, Σᵢ v1ᵢv2ᵢ"
 	},
 	"interp.lin": {
-		"prefix": "interp.lin",
+		"prefix": "interp.lin(e, v1, v2)",
 		"body": "interp.lin(${1:e}, ${2:v1}, ${3:v2})",
 		"description": "v2ₚ + (v2ₚ₊₁ - v2ₚ) * (e - v1ₚ) / (v1ₚ + 1 - v1ₚ) where the elements of v1 are in ascending order and p is such that v1ₚ < e < v1ₚ₊₁.\nGiven function values in the vector v2 evaluated at the points in v1, this estimates the function value at a new point e by simple linear interpolation using the closest bounding pair of points. For example, given the population in 1991, 2001 and 2011, we might want to estimate the population in 2004."
 	},
 	"inverse": {
-		"prefix": "inverse",
+		"prefix": "inverse(v)",
 		"body": "inverse(${1:v})",
 		"description": "inverse of symmetric positive-definite matrix v"
 	},
 	"logdet": {
-		"prefix": "logdet",
+		"prefix": "logdet(v)",
 		"body": "logdet(${1:v})",
 		"description": "log of determinant of v for symmetric positive-definite"
 	},
 	"mean": {
-		"prefix": "mean",
+		"prefix": "mean(v)",
 		"body": "mean(${1:v})",
 		"description": "Σᵢ (vᵢ / n) where n = dim(v)"
 	},
 	"eigen.vals": {
-		"prefix": "eigen.vals",
+		"prefix": "eigen.vals(v)",
 		"body": "eigen.vals(${1:v})",
 		"description": "eigenvalues of matrix v"
 	},
-	"ode": {
-		"prefix": "ode",
-		"body": "ode(${1:v1}, ${2:v2}, D(${3:v3}, ${4:s1}), ${5:s2}, ${6:s3})",
+	"ode(v1, v2, D": {
+		"prefix": "ode(v1, v2, D(v3, s1), s2, s3)",
+		"body": "ode(v1, v2, D(${1:v1}, ${2:v2}, ${3:D(v3}, ${4:s1)}, ${5:s2}, ${6:s3})",
 		"description": "solution of system of ordinary differential equations at grid of points v2 given initial values v1 at time s2 solved to accuracy s3. v3 is a vector of components of the system of ode and s1 is the time variable."
 	},
 	"prod": {
-		"prefix": "prod",
+		"prefix": "prod(v)",
 		"body": "prod(${1:v})",
 		"description": "Πᵢ vᵢ"
 	},
 	"p.valueM": {
-		"prefix": "p.valueM",
+		"prefix": "p.valueM(v)",
 		"body": "p.valueM(${1:v})",
 		"description": "v must be a multivariate stochastic node, returns a vector of ones and zeros depending on if a sample from the prior is less than value of the corresponding component of v"
 	},
 	"rank": {
-		"prefix": "rank",
+		"prefix": "rank(v, s)",
 		"body": "rank(${1:v}, ${2:s})",
 		"description": "number of components of v less than or equal to s"
 	},
 	"ranked": {
-		"prefix": "ranked",
+		"prefix": "ranked(v, s)",
 		"body": "ranked(${1:v}, ${2:s})",
 		"description": "the s th smallest component of v"
 	},
 	"replicate.postM": {
-		"prefix": "replicate.postM",
+		"prefix": "replicate.postM(v)",
 		"body": "replicate.postM(${1:v})",
 		"description": "replicate from multivariate distribution of v, v must be stochastic and multivariate"
 	},
 	"sd": {
-		"prefix": "sd",
+		"prefix": "sd(v)",
 		"body": "sd(${1:v})",
 		"description": "standard deviation of components of v (n - 1 in denominator)"
 	},
 	"sort": {
-		"prefix": "sort",
+		"prefix": "sort(v)",
 		"body": "sort(${1:v})",
 		"description": "vector v sorted in ascending order"
 	},
 	"sum": {
-		"prefix": "sum",
+		"prefix": "sum(v)",
 		"body": "sum(${1:v})",
 		"description": "Σᵢ vᵢ"
 	}
