@@ -157,7 +157,7 @@ function execModelCheck(modelPath: string): string {
 		if (FULLPATH === null) {
 			return "Cannot find OpenBUGS installation error pos 0."
 		}
-		return `script: ${scriptContent}\ncommand: "${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS`;
+		return `script: ${scriptContent}\ncommand: "${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS error pos0`;
 		execSync(`"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS`)
 		return fs.readFileSync(logPath).toString()
 	} else {
