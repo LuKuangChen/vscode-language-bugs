@@ -6,4 +6,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+- Added supports for parsing indices in table headers
+- Added `modelCheck` results in diagnostics
+- Added argument names in snippet prefixes
+- Removed parse errors from diagnostics
