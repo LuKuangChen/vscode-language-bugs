@@ -143,7 +143,7 @@ function locateOpenBugsOnWindows(): string | null {
 
 function execModelCheck(modelPath: string): string {
 	// run OpenBUGS modelCheck depending on the os
-	if (os.platform() !== 'win32') {
+	if (os.platform() === 'win32') {
 		const scriptPath: string = tmp.fileSync().name;
 		const logPath: string = tmp.fileSync().name;
 		// const scriptPath: string = "c:\\Users\\user\\Desktop\\script.txt"
