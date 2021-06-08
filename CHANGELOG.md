@@ -6,14 +6,13 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+- Added supports for parsing indices in table headers
+- Removed parse errors from diagnostics
+
+## 1.0.0 - 2021-06-08
+
 __Added__
 
-- Supports for parsing indices in table headers
-- `modelCheck` results in diagnostics
-- Argument names in snippet prefixes
-
-__Removed__
-
-- parse errors from diagnostics
-
-## 1.0.0 - 2021-06-16
+- Added `modelCheck` results in diagnostics on Linux
+- Added `modelCheck` results in diagnostics on Windows
+- Added argument names in snippet prefixes
