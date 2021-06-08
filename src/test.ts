@@ -2,15 +2,12 @@ import * as fs from 'fs';
 import { join } from 'path';
 import * as bugs from '../server/src/BUGSKit';
 
-let errorCounter = 0;
-
 const testParseFile = (filepath: string) => {
 	fs.readFile(filepath, 'utf8', (err, data) => {
 		if (err) throw err;
 		const fileContent = data.toLocaleString();
 		const parseResult = bugs.parse(fileContent);
 		if (parseResult.kind === 'error') {
-			errorCounter += 1;
 			console.log('Parse Error', filepath)
 			return;
 		}
@@ -30,12 +27,11 @@ const testParseFile = (filepath: string) => {
 			console.log("To  ", after.slice(firstDiff, firstDiff + 10))
 			return;
 		}
-		// console.log('Passed.')
 		return;
 	})
 }
 
-const pathToTestPrograms = join(__dirname, '../../test programs/');
+const pathToTestPrograms = join(__dirname, '../testSuite');
 fs.readdir(pathToTestPrograms, (err, files) => {
 	if (err) throw err;
 	for (const file of files) {

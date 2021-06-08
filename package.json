@@ -57,9 +57,7 @@
         "watch": "npm run compile-parser && tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
         "compileParser": "npx tspeg ./src/bugs.peg ./server/src/bugsPeg.ts",
-        "test": "npm run compile && npm run test-printer",
-        "testParser": "npx tsc -t es2019 -m commonjs ./src/test/testParser.ts && node ./src/test/testParser.js",
-        "testPrinter": "npx tsc -t es2019 -m commonjs ./src/test/testPrinter.ts && node ./src/test/testPrinter.js"
+        "test": "npm run compile && node ./out/test.js"
     },
     "devDependencies": {
         "@types/node": "^15.12.0",
