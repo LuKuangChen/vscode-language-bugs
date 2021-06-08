@@ -53,13 +53,13 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "tsc -b",
-        "watch": "tsc -b -w",
+        "compile": "npm run compile-parser && tsc -b",
+        "watch": "npm run compile-parser && tsc -b -w",
         "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-        "update-parser": "npx tspeg ./Grammar/bugs.peg ./src/parseBUGS.ts && cp ./src/parseBUGS.ts ./server/src/",
-        "test": "npm run test-parser && npm run test-printer",
-        "test-parser": "npx tsc -t es2019 -m commonjs ./src/test/testParser.ts && node ./src/test/testParser.js",
-        "test-printer": "npx tsc -t es2019 -m commonjs ./src/test/testPrinter.ts && node ./src/test/testPrinter.js"
+        "compileParser": "npx tspeg ./src/bugs.peg ./server/src/bugsPeg.ts",
+        "test": "npm run compile && npm run test-printer",
+        "testParser": "npx tsc -t es2019 -m commonjs ./src/test/testParser.ts && node ./src/test/testParser.js",
+        "testPrinter": "npx tsc -t es2019 -m commonjs ./src/test/testPrinter.ts && node ./src/test/testPrinter.js"
     },
     "devDependencies": {
         "@types/node": "^15.12.0",
