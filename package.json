@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "publisher": "LuKC1024",
     "displayName": "OpenBUGS",
-    "description": "OpenBUGS for Visual Studio Code",
+    "description": "OpenBUGS Language Support",
     "engines": {
         "vscode": "^1.56.0"
     },
@@ -13,8 +13,7 @@
         "Formatters"
     ],
     "activationEvents": [
-        "onLanguage:bugs",
-        "onCommand:foo.helloWorld"
+        "onLanguage:bugs"
     ],
     "main": "./client/out/extension.js",
     "contributes": {
