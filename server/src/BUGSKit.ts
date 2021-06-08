@@ -1,8 +1,5 @@
-import { SpawnOptions } from 'child_process';
-import { intersperse, line } from 'prettier-printer';
-import { ppid } from 'process';
 import { Position } from 'vscode-languageserver';
-import * as PETParse from './parseBUGS';
+import * as bugsPeg from './bugsPeg';
 import { Doc, makePrinter } from './prettyPrinter';
 import { Seq } from './Seq';
 
@@ -13,7 +10,7 @@ interface ParseError {
 	message: string;
 }
 
-function positionOfPosInfo(pos: PETParse.PosInfo): Position {
+function positionOfPosInfo(pos: bugsPeg.PosInfo): Position {
 	return {
 		"line": pos.line - 1,
 		"character": pos.offset
@@ -31,7 +28,7 @@ function fail<V, E>(e: E): Error<V, E> {
 }
 
 export function parse(sourceCode: string): Error<Program, ParseError[]> {
-	let parseResult = PETParse.parse(sourceCode);
+	let parseResult = bugsPeg.parse(sourceCode);
 	if (parseResult.ast !== null) {
 		return succeed(transformProgram(parseResult.ast));
 	} else {
@@ -45,15 +42,15 @@ export function parse(sourceCode: string): Error<Program, ParseError[]> {
 	}
 }
 
-function transformProgram(program: PETParse.program): Program {
-	function tName(name: PETParse.name): Name {
+function transformProgram(program: bugsPeg.program): Program {
+	function tName(name: bugsPeg.name): Name {
 		return {
 			literal: name.value,
 			start: positionOfPosInfo(name.from),
 			end: positionOfPosInfo(name.to)
 		}
 	}
-	function tExp0(exp: PETParse.exp0): Expression {
+	function tExp0(exp: bugsPeg.exp0): Expression {
 		if (exp.kind === 'exp0_4') {
 			return { kind: '()', content: tExp(exp.exp) }
 		} else if (exp.kind === 'name') {
@@ -68,14 +65,14 @@ function transformProgram(program: PETParse.program): Program {
 			throw "Never";
 		}
 	}
-	const tExpNullable = (e: PETParse.exp | null) => {
+	const tExpNullable = (e: bugsPeg.exp | null) => {
 		if (e === null) {
 			return null
 		} else {
 			return tExp(e);
 		}
 	}
-	function tExp(exp: PETParse.exp): Expression {
+	function tExp(exp: bugsPeg.exp): Expression {
 		if (exp.kind === 'exp2_1') {
 			return { kind: 'unop', operator: '-', exp: tExp(exp.exp) }
 		} else if (exp.kind === 'exp3_1') {
@@ -112,9 +109,9 @@ function transformProgram(program: PETParse.program): Program {
 			return e;
 		}
 	}
-	function tList(list: PETParse.list): List {
+	function tList(list: bugsPeg.list): List {
 		const operands: [Name, Expression][] = [];
-		function tField(field: PETParse.field): [Name, Expression] {
+		function tField(field: bugsPeg.field): [Name, Expression] {
 			return [tName(field.name), tExp(field.value)]
 		}
 		if (list.operands.content !== null) {
@@ -125,7 +122,7 @@ function transformProgram(program: PETParse.program): Program {
 		}
 		return { kind: "list", "content": operands }
 	}
-	function tRelation(relation: PETParse.relation): Relation {
+	function tRelation(relation: bugsPeg.relation): Relation {
 		if (relation.kind === 'stochasticRelation') {
 			let cti: StochasticRelation['cti'];
 			if (relation.cti === null) {
@@ -162,14 +159,14 @@ function transformProgram(program: PETParse.program): Program {
 			}
 		}
 	}
-	function tSepItem(sep: PETParse.sepItem): Array<SeperatorItem> {
+	function tSepItem(sep: bugsPeg.sepItem): Array<SeperatorItem> {
 		if (sep.kind === 'newline') {
 			return [tNewline(sep)]
 		} else {
 			return [tComment(sep)];
 		}
 	}
-	function tRelationSep(sep: PETParse.relationSep): Array<SeperatorItem> {
+	function tRelationSep(sep: bugsPeg.relationSep): Array<SeperatorItem> {
 		return sep.body.flatMap(({ sep, item }) => {
 			if (item.kind === 'relationSepItem_2') {
 				return []
@@ -178,7 +175,7 @@ function transformProgram(program: PETParse.program): Program {
 			}
 		})
 	}
-	function tBlock(block: PETParse.block): Block {
+	function tBlock(block: bugsPeg.block): Block {
 		const relations: Relation[] = [];
 		const seperators: SeperatorItem[][] = [];
 		seperators.push(tRelationSep(block.before))
@@ -192,10 +189,10 @@ function transformProgram(program: PETParse.program): Program {
 		seperators.push(tRelationSep(block.after))
 		return { relations, seperators };
 	}
-	function tScalar(scalar: PETParse.scalar): Scalar {
+	function tScalar(scalar: bugsPeg.scalar): Scalar {
 		return { kind: 'scalar', literal: scalar.value }
 	}
-	function tSection(section: PETParse.section): Section {
+	function tSection(section: bugsPeg.section): Section {
 		const kind = (section.header.kind === 'sectionHeader_1'
 			? 'model'
 			: 'data');
@@ -204,13 +201,13 @@ function transformProgram(program: PETParse.program): Program {
 			'body': tBlock(section.body)
 		}
 	}
-	function tNewline(x: PETParse.newline): SeperatorItem {
+	function tNewline(x: bugsPeg.newline): SeperatorItem {
 		return { kind: 'newline' };
 	}
-	function tComment(x: PETParse.comment): SeperatorItem {
+	function tComment(x: bugsPeg.comment): SeperatorItem {
 		return { kind: 'comment', content: x.content }
 	}
-	function tProgramBody(program: PETParse.programBody): List | TableProgram | ModelProgram {
+	function tProgramBody(program: bugsPeg.programBody): List | TableProgram | ModelProgram {
 		if (program.kind === 'list') {
 			return tList(program)
 		} else if (program.kind === 'rectangular') {
