@@ -14,10 +14,14 @@ import {
 	Position
 } from 'vscode-languageserver/node';
 import * as bugs from './BUGSKit';
+import * as tmp from 'tmp'
+import * as path from 'path'
+import * as os from 'os'
 import {
 	TextDocument, TextEdit
 } from 'vscode-languageserver-textdocument';
-import { Seq } from './Seq';
+import * as fs from 'fs';
+import { exec, execSync } from 'child_process'
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -121,9 +125,53 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
+function execModelCheck(path: string): string {
+	// run OpenBUGS modelCheck depending on the os
+	let command;
+	if (os.platform() === 'win32') {
+		const scriptFile = tmp.fileSync();
+		fs.writeFileSync(scriptFile.name, [
+			`modelCheck("${path}")`,
+			`modelQuit("yes")`
+		].join(os.EOL))
+		const FULLPATH = "";
+		command =  `"${FULLPATH}/OpenBUGS.exe" /PAR "${FULLPATH}/ScriptName.txt" /HEADLESS`
+	} else {
+		command = `echo 'modelCheck("${path}")' | OpenBUGS`
+	}
+	return execSync(command).toString()
+}
+
+function modelCheck(textDocument: TextDocument): Diagnostic[] {
+	const file = tmp.fileSync();
+	const path = file.name
+	fs.writeFileSync(path, textDocument.getText());
+	let modelCheckResult = execModelCheck(path)
+	// skip shit and newline
+	if (modelCheckResult.startsWith("OpenBUGS version")) {
+		modelCheckResult = modelCheckResult.split(os.EOL).slice(1).join(os.EOL)
+	}
+	const matchResult = /pos ([\d]+)/.exec(modelCheckResult)
+	if (matchResult !== null) {
+		const pos = textDocument.positionAt(parseInt(matchResult[1]))
+		return [{
+			'range': {
+				'start': pos,
+				'end': pos
+			},
+			'message': modelCheckResult,
+			'source': 'OpenBUGS modelCheck(...)'
+		}]
+	} else {
+		return []
+	}
+}
+
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const diagnostics: Diagnostic[] = [];
 	const text = textDocument.getText();
+
+	diagnostics.push(...modelCheck(textDocument))
 
 	documentContents.delete(textDocument.uri);
 	const parseResult = bugs.parse(text);
@@ -143,6 +191,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	} else {
 		documentContents.set(textDocument.uri, parseResult.content);
 	}
+
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
 }
 

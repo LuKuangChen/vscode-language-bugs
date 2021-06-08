@@ -1,8 +1,9 @@
 {
     "name": "openbugs",
+    "version": "0.0.1",
+    "publisher": "LuKC1024",
     "displayName": "OpenBUGS",
     "description": "OpenBUGS for Visual Studio Code",
-    "version": "0.0.1",
     "engines": {
         "vscode": "^1.56.0"
     },
@@ -55,9 +56,14 @@
         "vscode:prepublish": "npm run compile",
         "compile": "npm run compileParser && tsc -b",
         "watch": "npm run compileParser && tsc -b -w",
-        "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
-        "compileParser": "npx tspeg ./src/bugs.peg ./server/src/bugsPeg.ts",
+        "postinstall": "cd client && npm install cd ..",
+        "compileParser": "npx tspeg ./src/bugs.peg ./src/bugsPeg.ts",
         "test": "npm run compile && node ./out/test.js"
+    },
+    "dependencies": {
+        "tmp": "^0.2.1",
+        "vscode-languageserver": "^7.0.0",
+        "vscode-languageserver-textdocument": "^1.0.1"
     },
     "devDependencies": {
         "@types/node": "^15.12.0",

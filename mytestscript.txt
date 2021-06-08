@@ -1,4 +1,0 @@
-## Installation test script 
-modelSetWD("./example_bugs_programs")
-modelCheck("Ratsmodel.txt")
-# modelQuit() 

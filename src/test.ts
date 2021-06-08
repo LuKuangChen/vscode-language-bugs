@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { join } from 'path';
-import * as bugs from '../server/src/BUGSKit';
+import * as bugs from './BUGSKit';
 
 const testParseFile = (filepath: string) => {
 	fs.readFile(filepath, 'utf8', (err, data) => {

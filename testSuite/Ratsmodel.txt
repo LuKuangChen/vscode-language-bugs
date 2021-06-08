@@ -2,7 +2,7 @@ model
 {
     for( i in 1 : N ) {
         for( j in 1 : T ) {
-            Y[i , j] ~ dnorm(mu[i , j],tau.c)
+            Y[i , j] ~ dnorm(mu[i , j], tau.c)
             mu[i , j] <- alpha[i] + beta[i] * (x[j] - xbar)
         }
         alpha[i] ~ dnorm(alpha.c,alpha.tau)
