@@ -133,7 +133,7 @@ function locateOpenBugsOnWindows(): string | null {
 			const versions = fs.readdirSync(openBugsPath)
 			for (const version of versions) {
 				if (version.startsWith('OpenBUGS')) {
-					return `${drive}:\\Program Files\\OpenBUGS\\${version}\\OpenBUGS.exe`
+					return `${drive}:\\Program Files\\OpenBUGS\\${version}`
 				}
 			}
 		}
@@ -141,31 +141,39 @@ function locateOpenBugsOnWindows(): string | null {
 	return null
 }
 
-function execModelCheck(path: string): string {
+function execModelCheck(modelPath: string): string {
 	// run OpenBUGS modelCheck depending on the os
-	let command;
 	if (os.platform() === 'win32') {
-		const scriptFile = tmp.fileSync();
-		fs.writeFileSync(scriptFile.name, [
-			`modelCheck("${path}")`,
+		const scriptPath: string = tmp.fileSync().name;
+		const logPath: string = tmp.fileSync().name;
+		fs.writeFileSync(scriptPath, [
+			`modelDisplay('log')`,
+			`modelCheck('${modelPath.replace('\\', '/')}')`,
+			`modelSaveLog('${logPath.replace('\\', '/')}')`,
 			`modelQuit("yes")`
 		].join(os.EOL))
 		const FULLPATH = locateOpenBugsOnWindows();
 		if (FULLPATH === null) {
 			return "Cannot find OpenBUGS installation error pos 0."
 		}
-		command = `"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptFile.name}" /HEADLESS`
+		execSync(`"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS`)
+		return fs.readFileSync(logPath).toString()
 	} else {
-		command = `echo 'modelCheck("${path}")' | OpenBUGS`
+		return execSync(`echo 'modelCheck("${modelPath}")' | OpenBUGS`).toString()
 	}
-	return execSync(command).toString()
 }
 
 function modelCheck(textDocument: TextDocument): Diagnostic[] {
 	const file = tmp.fileSync();
 	const path = file.name
 	fs.writeFileSync(path, textDocument.getText());
-	let modelCheckResult = execModelCheck(path)
+	let modelCheckResult;
+
+	try {
+		modelCheckResult = execModelCheck(path)
+	} catch (err) {
+		modelCheckResult = `Something went wrong when I tried to run modelCheck. The error is ${JSON.stringify(err)}. Please report to the extension author. error pos 0.`
+	}
 	// skip shit and newline
 	if (modelCheckResult.startsWith("OpenBUGS version")) {
 		modelCheckResult = modelCheckResult.split(os.EOL).slice(1).join(os.EOL)
