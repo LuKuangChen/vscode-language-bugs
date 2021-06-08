@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { join } from 'path';
-import * as parse from '../parseBUGS';
+import * as parse from '../server/src/bugsPeg';
 
 let successCounter = 0;
 let errorCounter = 0;

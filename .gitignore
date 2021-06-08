@@ -3,3 +3,4 @@
 *.vsix
 **/.vscode*
 *.js
+*.tsbuildinfo
