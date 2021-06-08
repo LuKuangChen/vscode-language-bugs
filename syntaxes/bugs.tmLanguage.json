@@ -6,9 +6,6 @@
 			"include": "#keywords"
 		},
 		{
-			"include": "#strings"
-		},
-		{
 			"include": "#identifiers"
 		},
 		{
@@ -39,17 +36,6 @@
 				{
 					"name": "keyword.operator.bugs",
 					"match": "~|<-"
-				}
-			]
-		},
-		"strings": {
-			"name": "string.quoted.double.bugs",
-			"begin": "\"",
-			"end": "\"",
-			"patterns": [
-				{
-					"name": "constant.character.escape.bugs",
-					"match": "\\\\."
 				}
 			]
 		},
