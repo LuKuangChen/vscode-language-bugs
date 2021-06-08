@@ -11,7 +11,6 @@ All notable changes to the "OpenBUGS" extension will be documented in this file.
 
 - Fixed modelCheck under Windows
 
-
 ## 1.0.0 - 2021-06-08
 
 - Added `modelCheck` results in diagnostics on Linux
