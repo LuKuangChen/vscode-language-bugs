@@ -146,16 +146,18 @@ function execModelCheck(modelPath: string): string {
 	if (os.platform() === 'win32') {
 		const scriptPath: string = tmp.fileSync().name;
 		const logPath: string = tmp.fileSync().name;
-		fs.writeFileSync(scriptPath, [
+		const scriptContent = [
 			`modelDisplay('log')`,
 			`modelCheck('${modelPath.replace('\\', '/')}')`,
 			`modelSaveLog('${logPath.replace('\\', '/')}')`,
 			`modelQuit("yes")`
-		].join(os.EOL))
+		].join(os.EOL)
+		fs.writeFileSync(scriptPath, scriptContent)
 		const FULLPATH = locateOpenBugsOnWindows();
 		if (FULLPATH === null) {
 			return "Cannot find OpenBUGS installation error pos 0."
 		}
+		return `script: ${scriptContent}\ncommand: "${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS`;
 		execSync(`"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace('\\', '/')}" /HEADLESS`)
 		return fs.readFileSync(logPath).toString()
 	} else {
