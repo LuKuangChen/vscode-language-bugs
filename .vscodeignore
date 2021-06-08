@@ -1,0 +1,6 @@
+.vscode/**
+.vscode-test/**
+.gitignore
+**/*.ts
+**/tsconfig.json
+**/*.peg
