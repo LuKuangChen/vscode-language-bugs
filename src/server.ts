@@ -165,11 +165,20 @@ function locateOpenBugsOnWindows(): string {
 	}
 }
 
+function freshPath() {
+	// return tmp.fileSync().name
+	if (os.platform() === 'win32') {
+		return 'C:\\Users\\user\\Desktop\\VSCodeOpenBUGS' + Math.round(Math.random() * 10000) + '.txt'
+	} else {
+		return tmp.fileSync().name
+	}
+}
+
 function execModelCheckWin(modelPath: string): string {
 	const FULLPATH = locateOpenBugsOnWindows();
 	// const FULLPATH = `c:\\Program Files\\OpenBUGS\\OpenBUGS323`
-	const scriptPath: string = tmp.fileSync().name;
-	const logPath: string = tmp.fileSync().name;
+	const scriptPath: string = freshPath();
+	const logPath: string = freshPath();
 	// const scriptPath: string = "c:\\Users\\user\\Desktop\\script.txt"
 	// const logPath: string = "c:\\Users\\user\\Desktop\\log.txt";
 	const winPathToOpenBubsPath = (path) => path.replace(/\\/g, '/');
@@ -182,7 +191,7 @@ function execModelCheckWin(modelPath: string): string {
 	fs.writeFileSync(scriptPath, scriptContent)
 	// const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
 	const command = `"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS`
-	return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
+	// return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
 	try {
 		execSync(command, { 'timeout': 500, shell: 'cmd.exe' })
 	} catch (e) {
@@ -193,8 +202,9 @@ function execModelCheckWin(modelPath: string): string {
 	return fs.readFileSync(logPath).toString()
 }
 
-function execModelCheck(modelPath: string): string {
-	// run OpenBUGS modelCheck depending on the os
+function execModelCheck(textDocument: TextDocument): string {
+	const modelPath = freshPath();
+	fs.writeFileSync(modelPath, textDocument.getText());
 	if (os.platform() === 'win32') {
 		return execModelCheckWin(modelPath)
 	} else {
@@ -210,7 +220,8 @@ function diagnosticOfModelCheck(textDocument: TextDocument, modelCheckResult: st
 	const matchResult = /error pos ([\d]+)/.exec(modelCheckResult)
 	if (matchResult === null) {
 		// the result looks good
-		return []
+		// TODO: fix this after debugging
+		return [simpleDiagnositic(modelCheckResult)]
 	}
 	const pos = textDocument.positionAt(parseInt(matchResult[1]))
 	const message = modelCheckResult.replace(/error pos ([\d]+)/, '')
@@ -225,10 +236,7 @@ function diagnosticOfModelCheck(textDocument: TextDocument, modelCheckResult: st
 }
 
 function modelCheck(textDocument: TextDocument): Diagnostic[] {
-	const file = tmp.fileSync();
-	const path = file.name;
-	fs.writeFileSync(path, textDocument.getText());
-	let modelCheckResult = execModelCheck(path);
+	let modelCheckResult = execModelCheck(textDocument);
 	return diagnosticOfModelCheck(textDocument, modelCheckResult)
 }
 
