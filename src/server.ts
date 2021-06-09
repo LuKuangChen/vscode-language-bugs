@@ -146,13 +146,17 @@ function locateOpenBugsOnWindows(): string {
 	})
 	// find path to OpenBUGS
 	let path;
-	// try {
+	try {
 		path = Seq.findFirst(installPaths, (path) => {
 			return fs.existsSync(path)
 		})
-	// } catch (_) {
-	// 	throw simpleDiagnositic(`I cannot find OpenBUGS installation in [${installPaths.join(', ')}].`)
-	// }
+	} catch (e) {
+		if (e === 'Not found') {
+			throw simpleDiagnositic(`I cannot find OpenBUGS installation in [${installPaths.join(', ')}].`)
+		} else {
+			throw e
+		}
+	}
 	const versions = fs.readdirSync(path)
 	for (const version of versions) {
 		if (version.startsWith('OpenBUGS')) {
@@ -178,7 +182,7 @@ function execModelCheckWin(modelPath: string): string {
 	fs.writeFileSync(scriptPath, scriptContent)
 	// const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
 	const command = `"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS`
-	return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
+	return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
 	try {
 		execSync(command, { 'timeout': 500, shell: 'cmd.exe' })
 	} catch (e) {
@@ -221,11 +225,11 @@ function diagnosticOfModelCheck(textDocument: TextDocument, modelCheckResult: st
 }
 
 function modelCheck(textDocument: TextDocument): Diagnostic[] {
-		const file = tmp.fileSync();
-		const path = file.name;
-		fs.writeFileSync(path, textDocument.getText());
-		let modelCheckResult = execModelCheck(path);
-		return diagnosticOfModelCheck(textDocument, modelCheckResult)
+	const file = tmp.fileSync();
+	const path = file.name;
+	fs.writeFileSync(path, textDocument.getText());
+	let modelCheckResult = execModelCheck(path);
+	return diagnosticOfModelCheck(textDocument, modelCheckResult)
 }
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
