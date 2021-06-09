@@ -198,10 +198,11 @@ function execModelCheckWin(modelPath: string): string {
 		e.stderr = e.stderr.toString()
 		throw { where: 'execSync', error: e };
 	}
-	return "Hey, the command was ran successfully."
+	// return "Hey, the command was ran successfully."
 	// return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
 	// readFileSync probably didn't return.
 	const logContent = fs.readFileSync(logPath).toString();
+	return "Okay, the cmd was good, how about read?"
 	return logContent
 }
 
