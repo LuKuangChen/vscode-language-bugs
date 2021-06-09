@@ -178,7 +178,7 @@ function execModelCheckWin(modelPath: string): string {
 	fs.writeFileSync(scriptPath, scriptContent)
 	const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
 	// return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
-	execSync(command)
+	execSync(command, { 'timeout': 300 })
 	return fs.readFileSync(logPath).toString()
 }
 
@@ -187,7 +187,7 @@ function execModelCheck(modelPath: string): string {
 	if (os.platform() === 'win32') {
 		return execModelCheckWin(modelPath)
 	} else {
-		return execSync(`echo 'modelCheck("${modelPath}")' | OpenBUGS`).toString()
+		return execSync(`echo 'modelCheck("${modelPath}")' | OpenBUGS`, { 'timeout': 300 }).toString()
 	}
 }
 
