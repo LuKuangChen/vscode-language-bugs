@@ -198,8 +198,9 @@ function execModelCheckWin(modelPath: string): string {
 		e.stderr = e.stderr.toString()
 		throw { where: 'execSync', error: e };
 	}
-	const logContent = fs.readFileSync(logPath).toString();
 	return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
+	// readFileSync probably didn't return.
+	const logContent = fs.readFileSync(logPath).toString();
 	return logContent
 }
 
