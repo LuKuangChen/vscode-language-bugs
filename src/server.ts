@@ -192,13 +192,14 @@ function execModelCheckWin(modelPath: string): string {
 	// const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
 	const command = `"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS`
 	try {
-		execSync(command, { 'timeout': 500, shell: 'cmd.exe' })
+		execSync(command, { shell: 'cmd.exe' })
 	} catch (e) {
 		e.stdout = e.stdout.toString()
 		e.stderr = e.stderr.toString()
 		throw { where: 'execSync', error: e };
 	}
-	return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
+	return "Hey, the command was ran successfully."
+	// return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
 	// readFileSync probably didn't return.
 	const logContent = fs.readFileSync(logPath).toString();
 	return logContent
@@ -233,7 +234,7 @@ function diagnosticOfModelCheck(textDocument: TextDocument, modelCheckResult: st
 			'end': pos
 		},
 		'message': message,
-		'source': 'OpenBUGS modelCheck(...)'
+		'source': 'OpenBUGS modelCheck'
 	}]
 }
 
