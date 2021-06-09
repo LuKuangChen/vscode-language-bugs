@@ -1,4 +1,21 @@
 export const Seq = {
+	cartesianProduct: <X, Y>(xs: Array<X>, ys: Array<Y>) => {
+		const zs: Array<{left: X, right: Y}> = [];
+		for (const left of xs) {
+			for (const right of ys) {
+				zs.push({ left, right })
+			}
+		}
+		return zs
+	},
+	findFirst: <X>(xs: Array<X>, p: (x: X) => boolean) => {
+		for (const x of xs) {
+			if (p(x)) {
+				return x;
+			}
+		}
+		throw "Not found"
+	},
 	dropWhile: <X>(xs: Array<X>, p: (x: X) => boolean) => {
 		let i: number;
 		for (i = 0; i < xs.length && p(xs[i]); i++) {

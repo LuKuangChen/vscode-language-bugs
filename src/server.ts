@@ -22,6 +22,7 @@ import {
 } from 'vscode-languageserver-textdocument';
 import * as fs from 'fs';
 import { exec, execSync } from 'child_process'
+import { Seq } from './Seq';
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -125,78 +126,100 @@ documents.onDidChangeContent(change => {
 	validateTextDocument(change.document);
 });
 
-function locateOpenBugsOnWindows(): string | null {
+
+function simpleDiagnositic(message: string): Diagnostic {
+	return {
+		'range': {
+			'start': { 'line': 0, 'character': 0 },
+			'end': { 'line': 0, 'character': 0 },
+		},
+		'message': `${message} Please report to the extension author.`,
+		'source': 'OpenBUGS VSCode Extension Internal Error'
+	}
+}
+
+function locateOpenBugsOnWindows(): string {
 	const drives = ['c', 'd', 'e', 'f'];
-	for (const drive of drives) {
-		const openBugsPath = `${drive}:\\Program Files\\OpenBUGS`
-		if (fs.existsSync(openBugsPath)) {
-			const versions = fs.readdirSync(openBugsPath)
-			for (const version of versions) {
-				if (version.startsWith('OpenBUGS')) {
-					return `${drive}:\\Program Files\\OpenBUGS\\${version}`
-				}
-			}
+	const programFiles = ['Program Files', 'Program Files (x86)']
+	const installPaths = Seq.cartesianProduct(drives, programFiles).map(({ left: drive, right: programFiles }) => {
+		return `${drive}:\\${programFiles}\\OpenBUGS`
+	})
+	// find path to OpenBUGS
+	let path;
+	try {
+		path = Seq.findFirst(installPaths, (path) => {
+			return fs.existsSync(path)
+		})
+	} catch (_) {
+		throw simpleDiagnositic(`I cannot find OpenBUGS installation in [${installPaths.join(', ')}].`)
+	}
+	const versions = fs.readdirSync(path)
+	for (const version of versions) {
+		if (version.startsWith('OpenBUGS')) {
+			return `${path}\\${version}\\OpenBUGS.exe`
 		}
 	}
-	return null
+}
+
+function execModelCheckWin(modelPath: string): string {
+	const FULLPATH = locateOpenBugsOnWindows();
+	// const FULLPATH = `c:\\Program Files\\OpenBUGS\\OpenBUGS323`
+	const scriptPath: string = tmp.fileSync().name;
+	const logPath: string = tmp.fileSync().name;
+	// const scriptPath: string = "c:\\Users\\user\\Desktop\\script.txt"
+	// const logPath: string = "c:\\Users\\user\\Desktop\\log.txt";
+	const winPathToOpenBubsPath = (path) => path.replace(/\\/g, '/');
+	const scriptContent = [
+		`modelDisplay('log')`,
+		`modelCheck('${winPathToOpenBubsPath(modelPath)}')'`,
+		`modelSaveLog('${winPathToOpenBubsPath(logPath)}')`,
+		`modelQuit('yes')`
+	].join(os.EOL)
+	fs.writeFileSync(scriptPath, scriptContent)
+	const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
+	return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
 }
 
 function execModelCheck(modelPath: string): string {
 	// run OpenBUGS modelCheck depending on the os
 	if (os.platform() === 'win32') {
-		const scriptPath: string = tmp.fileSync().name;
-		const logPath: string = tmp.fileSync().name;
-		// const scriptPath: string = "c:\\Users\\user\\Desktop\\script.txt"
-		// const logPath: string = "c:\\Users\\user\\Desktop\\log.txt";
-		const scriptContent = [
-			`modelDisplay('log')`,
-			`modelCheck('${modelPath.replace(/\\/g, '/')}')`,
-			`modelSaveLog('${logPath.replace(/\\/g, '/')}')`,
-			`modelQuit('yes')`
-		].join(os.EOL)
-		fs.writeFileSync(scriptPath, scriptContent)
-		const FULLPATH = locateOpenBugsOnWindows();
-		// const FULLPATH = `c:\\Program Files\\OpenBUGS\\OpenBUGS323`
-		if (FULLPATH === null) {
-			return "Cannot find OpenBUGS installation error pos 0."
-		}
-		const command = `"${FULLPATH}\\OpenBUGS.exe" /PAR "${scriptPath.replace(/\\/g, '/')}" /HEADLESS`
-		// return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
-		execSync(`${command}`)
-		return fs.readFileSync(logPath).toString()
+		return execModelCheckWin(modelPath)
 	} else {
 		return execSync(`echo 'modelCheck("${modelPath}")' | OpenBUGS`).toString()
 	}
 }
 
-function modelCheck(textDocument: TextDocument): Diagnostic[] {
-	const file = tmp.fileSync();
-	const path = file.name
-	fs.writeFileSync(path, textDocument.getText());
-	let modelCheckResult;
-
-	try {
-		modelCheckResult = execModelCheck(path)
-	} catch (err) {
-		modelCheckResult = `Something went wrong when I tried to run modelCheck. The error is ${JSON.stringify(err)}. Please report to the extension author. error pos 0.`
-	}
+function diagnosticOfModelCheck(textDocument: TextDocument, modelCheckResult: string): Array<Diagnostic> {
 	// skip shit and newline
 	if (modelCheckResult.startsWith("OpenBUGS version")) {
 		modelCheckResult = modelCheckResult.split(os.EOL).slice(1).join(os.EOL)
 	}
-	const matchResult = /pos ([\d]+)/.exec(modelCheckResult)
-	if (matchResult !== null) {
-		const pos = textDocument.positionAt(parseInt(matchResult[1]))
-		return [{
-			'range': {
-				'start': pos,
-				'end': pos
-			},
-			'message': modelCheckResult,
-			'source': 'OpenBUGS modelCheck(...)'
-		}]
-	} else {
+	const matchResult = /error pos ([\d]+)/.exec(modelCheckResult)
+	if (matchResult === null) {
+		// the result looks good
 		return []
+	}
+	const pos = textDocument.positionAt(parseInt(matchResult[1]))
+	const message = modelCheckResult.replace(/error pos ([\d]+)/, '')
+	return [{
+		'range': {
+			'start': pos,
+			'end': pos
+		},
+		'message': message,
+		'source': 'OpenBUGS modelCheck(...)'
+	}]
+}
+
+function modelCheck(textDocument: TextDocument): Diagnostic[] {
+	try {
+		const file = tmp.fileSync();
+		const path = file.name;
+		fs.writeFileSync(path, textDocument.getText());
+		let modelCheckResult = execModelCheck(path);
+		return diagnosticOfModelCheck(textDocument, modelCheckResult)
+	} catch (d) {
+		return [d as Diagnostic]
 	}
 }
 
