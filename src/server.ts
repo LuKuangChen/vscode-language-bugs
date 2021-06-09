@@ -146,13 +146,13 @@ function locateOpenBugsOnWindows(): string {
 	})
 	// find path to OpenBUGS
 	let path;
-	try {
+	// try {
 		path = Seq.findFirst(installPaths, (path) => {
 			return fs.existsSync(path)
 		})
-	} catch (_) {
-		throw simpleDiagnositic(`I cannot find OpenBUGS installation in [${installPaths.join(', ')}].`)
-	}
+	// } catch (_) {
+	// 	throw simpleDiagnositic(`I cannot find OpenBUGS installation in [${installPaths.join(', ')}].`)
+	// }
 	const versions = fs.readdirSync(path)
 	for (const version of versions) {
 		if (version.startsWith('OpenBUGS')) {
@@ -214,15 +214,11 @@ function diagnosticOfModelCheck(textDocument: TextDocument, modelCheckResult: st
 }
 
 function modelCheck(textDocument: TextDocument): Diagnostic[] {
-	try {
 		const file = tmp.fileSync();
 		const path = file.name;
 		fs.writeFileSync(path, textDocument.getText());
 		let modelCheckResult = execModelCheck(path);
 		return diagnosticOfModelCheck(textDocument, modelCheckResult)
-	} catch (d) {
-		return [d as Diagnostic]
-	}
 }
 
 async function validateTextDocument(textDocument: TextDocument): Promise<void> {
