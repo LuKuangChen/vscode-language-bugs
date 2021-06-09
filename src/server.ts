@@ -176,10 +176,11 @@ function execModelCheckWin(modelPath: string): string {
 		`modelQuit('yes')`
 	].join(os.EOL)
 	fs.writeFileSync(scriptPath, scriptContent)
-	const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
+	// const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
+	const command = `"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS`
 	// return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
 	try {
-		execSync(command, { 'timeout': 300 })
+		execSync(command, { 'timeout': 300, shell: 'cmd.exe' })
 	} catch (e) {
 		e.stdout = e.stdout.toString()
 		e.stderr = e.stderr.toString()
