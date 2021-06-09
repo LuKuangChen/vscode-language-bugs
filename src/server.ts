@@ -171,7 +171,7 @@ function execModelCheckWin(modelPath: string): string {
 	const winPathToOpenBubsPath = (path) => path.replace(/\\/g, '/');
 	const scriptContent = [
 		`modelDisplay('log')`,
-		`modelCheck('${winPathToOpenBubsPath(modelPath)}')'`,
+		`modelCheck('${winPathToOpenBubsPath(modelPath)}')`,
 		`modelSaveLog('${winPathToOpenBubsPath(logPath)}')`,
 		`modelQuit('yes')`
 	].join(os.EOL)
