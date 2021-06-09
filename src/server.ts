@@ -202,7 +202,7 @@ function execModelCheckWin(modelPath: string): string {
 	// return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
 	// readFileSync probably didn't return.
 	const logContent = fs.readFileSync(logPath).toString();
-	return "Okay, the cmd was good, how about read?"
+	// return "Okay, the cmd was good, how about read?"
 	return logContent
 }
 
