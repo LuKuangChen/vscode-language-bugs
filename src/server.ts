@@ -177,7 +177,7 @@ function execModelCheckWin(modelPath: string): string {
 	].join(os.EOL)
 	fs.writeFileSync(scriptPath, scriptContent)
 	const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
-	return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
+	// return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
 	execSync(command)
 	return fs.readFileSync(logPath).toString()
 }
@@ -229,25 +229,33 @@ async function validateTextDocument(textDocument: TextDocument): Promise<void> {
 	const diagnostics: Diagnostic[] = [];
 	const text = textDocument.getText();
 
-	diagnostics.push(...modelCheck(textDocument))
+	try {
+		diagnostics.push(...modelCheck(textDocument))
+	} catch (e) {
+		diagnostics.push(simpleDiagnositic(`Some unhandled error happens during modelCheck ${JSON.stringify(e)}`))
+	}
 
-	documentContents.delete(textDocument.uri);
-	const parseResult = bugs.parse(text);
-	if (parseResult.kind === 'error') {
-		for (const err of parseResult.content) {
-			const parseDiagnostic: Diagnostic = {
-				severity: DiagnosticSeverity.Error,
-				range: {
-					start: err.position,
-					end: err.position,
-				},
-				message: err.message,
-				source: 'OpenBUGS VSCode Extension'
-			};
-			diagnostics.push(parseDiagnostic);
+	try {
+		documentContents.delete(textDocument.uri);
+		const parseResult = bugs.parse(text);
+		if (parseResult.kind === 'error') {
+			for (const err of parseResult.content) {
+				const parseDiagnostic: Diagnostic = {
+					severity: DiagnosticSeverity.Error,
+					range: {
+						start: err.position,
+						end: err.position,
+					},
+					message: err.message,
+					source: 'OpenBUGS VSCode Extension'
+				};
+				diagnostics.push(parseDiagnostic);
+			}
+		} else {
+			documentContents.set(textDocument.uri, parseResult.content);
 		}
-	} else {
-		documentContents.set(textDocument.uri, parseResult.content);
+	} catch (e) {
+		diagnostics.push(simpleDiagnositic(`Some unhandled error happens during parsing ${JSON.stringify(e)}`))
 	}
 
 	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
