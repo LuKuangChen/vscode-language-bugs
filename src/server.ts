@@ -191,15 +191,16 @@ function execModelCheckWin(modelPath: string): string {
 	fs.writeFileSync(scriptPath, scriptContent)
 	// const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
 	const command = `"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS`
-	// return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
 	try {
 		execSync(command, { 'timeout': 500, shell: 'cmd.exe' })
 	} catch (e) {
 		e.stdout = e.stdout.toString()
 		e.stderr = e.stderr.toString()
-		throw e;
+		throw { where: 'execSync', error: e };
 	}
-	return fs.readFileSync(logPath).toString()
+	const logContent = fs.readFileSync(logPath).toString();
+	return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
+	return logContent
 }
 
 function execModelCheck(textDocument: TextDocument): string {
