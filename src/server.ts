@@ -178,7 +178,13 @@ function execModelCheckWin(modelPath: string): string {
 	fs.writeFileSync(scriptPath, scriptContent)
 	const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
 	// return `script: ${scriptContent}\ncommand: ${command} error pos 0`;
-	execSync(command, { 'timeout': 300 })
+	try {
+		execSync(command, { 'timeout': 300 })
+	} catch (e) {
+		e.stdout = e.stdout.toString()
+		e.stderr = e.stderr.toString()
+		throw e;
+	}
 	return fs.readFileSync(logPath).toString()
 }
 
