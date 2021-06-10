@@ -1,6 +1,6 @@
 {
     "name": "openbugs",
-    "version": "1.0.1-dev1",
+    "version": "1.0.1-dev2",
     "publisher": "LuKC1024",
     "engines": {
         "vscode": "^1.56.0"
