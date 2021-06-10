@@ -40,7 +40,7 @@ connection.onInitialize((_params: InitializeParams) => {
 	return result;
 });
 
-async function initializePathOfStorage(): Promise<void> {
+async function initializePathToStorage(): Promise<void> {
 	return connection.sendRequest('custom/getStoragePath').then((path: string) => {
 		pathToStorage = path;
 		if (!fs.existsSync(path)) {
@@ -101,7 +101,7 @@ documents.onDidSave(event => {
 
 async function handleDidChangeContent(textDocument: TextDocument): Promise<void> {
 	if (pathToStorage === undefined) {
-		initializePathOfStorage().then(() => handleDidChangeContent(textDocument))
+		initializePathToStorage().then(() => handleDidChangeContent(textDocument))
 	} else {
 		try {
 			connection.sendDiagnostics({
@@ -120,7 +120,7 @@ async function handleDidChangeContent(textDocument: TextDocument): Promise<void>
 
 async function handleDidSave(textDocument: TextDocument): Promise<void> {
 	if (pathToStorage === undefined) {
-		initializePathOfStorage().then(() => handleDidSave(textDocument))
+		initializePathToStorage().then(() => handleDidSave(textDocument))
 	} else {
 		try {
 			connection.sendDiagnostics({
@@ -185,13 +185,15 @@ function modelCheck(textDocument: TextDocument): Diagnostic[] {
 		if (log.startsWith("OpenBUGS version")) {
 			log = log.split(os.EOL).slice(1).join(os.EOL)
 		}
-		const matchResult = /error pos ([\d]+)/.exec(log)
-		if (matchResult === null) {
+		const matchPos = /error pos ([\d]+)/.exec(log)
+		const matchLine =  /on line ([\d]+)/.exec(log)
+		if (matchPos === null || matchLine === null) {
 			// connection.sendNotification('custom/information', log)
 			return []
 		} else {
-			const pos = textDocument.positionAt(parseInt(matchResult[1]))
-			const message = log.replace(/error pos ([\d]+)/, '')
+			const pos = textDocument.positionAt(parseInt(matchPos[1]))
+			pos.line = parseInt(matchLine[1]) - 1
+			const message = log
 			return [{
 				'range': {
 					'start': pos,
