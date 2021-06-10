@@ -6,6 +6,11 @@ All notable changes to the "OpenBUGS" extension will be documented in this file.
 
 - Added supports for higher-dimensional tabular files.
 - Changed parse errors to make them more readable.
+- Changed code organization to reduce package size and improve performance.
+
+## 1.0.1 - 2021-06-11
+
+- Changed to only perform modelCheck when a file is opened or saved.
 
 ## 1.0.0 - 2021-06-11
 

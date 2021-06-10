@@ -91,10 +91,36 @@ documents.onDidChangeContent(change => {
 	handleDidChangeContent(change.document);
 });
 
+documents.onDidOpen(event => {
+	handleDidSave(event.document)
+})
+
+documents.onDidSave(event => {
+	handleDidSave(event.document);
+})
 
 async function handleDidChangeContent(textDocument: TextDocument): Promise<void> {
 	if (pathToStorage === undefined) {
 		initializePathOfStorage().then(() => handleDidChangeContent(textDocument))
+	} else {
+		try {
+			connection.sendDiagnostics({
+				uri: textDocument.uri,
+				diagnostics: [
+					// ...modelCheck(textDocument),
+					...parseAndCheck(textDocument)
+				]
+			})
+			return
+		} catch (e) {
+			connection.sendNotification('custom/warning', `Found an internal error. Please report to the auther of OpenBUGS VSCode extension. The error is ${JSON.stringify(e)}`)
+		}
+	}
+}
+
+async function handleDidSave(textDocument: TextDocument): Promise<void> {
+	if (pathToStorage === undefined) {
+		initializePathOfStorage().then(() => handleDidSave(textDocument))
 	} else {
 		try {
 			connection.sendDiagnostics({

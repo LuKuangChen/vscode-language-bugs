@@ -4,3 +4,4 @@
 **/*.ts
 **/tsconfig.json
 **/*.peg
+testSuite/*
