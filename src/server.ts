@@ -188,7 +188,7 @@ function modelCheck(textDocument: TextDocument): Diagnostic[] {
 		const matchPos = /error pos ([\d]+)/.exec(log)
 		const matchLine =  /on line ([\d]+)/.exec(log)
 		if (matchPos === null || matchLine === null) {
-			// connection.sendNotification('custom/information', log)
+			connection.sendNotification('custom/information', log)
 			return []
 		} else {
 			const pos = textDocument.positionAt(parseInt(matchPos[1]))
