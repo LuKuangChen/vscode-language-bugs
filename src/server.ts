@@ -71,8 +71,8 @@ connection.onInitialized((_params) => {
 		if (installedPaths.length === 0) {
 			connection.sendNotification("custom/warning", `I find no OpenBUGS installation in ${possiblePaths.join(', ')}.`)
 			return
-		} else if (installedPaths.length > 0) {
-			connection.sendNotification("custom/warning", `I am not sure which OpenBUGS should I use. There are more than one installations: ${possiblePaths.join(', ')}.`)
+		} else if (installedPaths.length > 1) {
+			connection.sendNotification("custom/warning", `I am not sure which OpenBUGS should I use. There are more than one installations: ${installedPaths.join(', ')}.`)
 			return
 		} else {
 			pathToOpenBUGS = installedPaths[0]
@@ -122,7 +122,6 @@ function freshPath(suffix: string = '.txt') {
 }
 
 function execModelCheckWin(modelPath: string): string {
-	// assume pathToOpenBUGS is defined.
 	const scriptPath: string = freshPath('script.txt');
 	const logPath: string = freshPath('log.txt');
 	const winPathToOpenBubsPath = (path) => path.replace(/\\/g, '/');
