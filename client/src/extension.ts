@@ -4,6 +4,7 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
+import { Uri } from 'vscode';
 import { workspace, ExtensionContext, window } from 'vscode';
 
 import {
@@ -47,11 +48,23 @@ export function activate(context: ExtensionContext) {
 
 	// Create the language client and start the client.
 	client = new LanguageClient(
-		'languageServerExample',
-		'Language Server Example',
+		'OpenBUGSLanguageServer',
+		'OpenBUGS Language Server',
 		serverOptions,
 		clientOptions
 	);
+
+	client.onReady().then(() => {
+		client.onRequest('custom/getStoragePath', () => {
+			return context.globalStorageUri.fsPath
+		})
+		client.onNotification('custom/warning', (message: string) => {
+			window.showWarningMessage(message)
+		})
+		client.onNotification('custom/information', (message: string) => {
+			window.showInformationMessage(message)
+		})
+	})
 
 	// Start the client. This will also launch the server
 	client.start();

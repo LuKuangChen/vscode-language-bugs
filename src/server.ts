@@ -5,13 +5,8 @@ import {
 	DiagnosticSeverity,
 	ProposedFeatures,
 	InitializeParams,
-	DidChangeConfigurationNotification,
-	CompletionItem,
-	CompletionItemKind,
-	TextDocumentPositionParams,
 	TextDocumentSyncKind,
 	InitializeResult,
-	Position
 } from 'vscode-languageserver/node';
 import * as bugs from './BUGSKit';
 import * as tmp from 'tmp'
@@ -21,166 +16,115 @@ import {
 	TextDocument, TextEdit
 } from 'vscode-languageserver-textdocument';
 import * as fs from 'fs';
-import { exec, execSync } from 'child_process'
+import { execSync } from 'child_process'
 import { Seq } from './Seq';
 
-// Create a connection for the server, using Node's IPC as a transport.
-// Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
-
-// Create a simple text document manager.
 const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 
-let hasConfigurationCapability = false;
-let hasWorkspaceFolderCapability = false;
-let hasDiagnosticRelatedInformationCapability = false;
+// parsed prgrams
+const documentContents: Map<string, bugs.Program> = new Map();
+let pathToOpenBUGS: string | undefined = undefined;
+let pathToStorage: string | undefined = undefined;
 
-connection.onInitialize((params: InitializeParams) => {
-	const capabilities = params.capabilities;
+// connection.onNotification('custom/setStoragePath', (path) => {
+// })
 
-	// Does the client support the `workspace/configuration` request?
-	// If not, we fall back using global settings.
-	hasConfigurationCapability = !!(
-		capabilities.workspace && !!capabilities.workspace.configuration
-	);
-	hasWorkspaceFolderCapability = !!(
-		capabilities.workspace && !!capabilities.workspace.workspaceFolders
-	);
-	hasDiagnosticRelatedInformationCapability = !!(
-		capabilities.textDocument &&
-		capabilities.textDocument.publishDiagnostics &&
-		capabilities.textDocument.publishDiagnostics.relatedInformation
-	);
-
+connection.onInitialize((_params: InitializeParams) => {
 	const result: InitializeResult = {
 		capabilities: {
 			textDocumentSync: TextDocumentSyncKind.Incremental,
-			// Tell the client that this server supports code completion.
-			// completionProvider: {
-			// 	resolveProvider: true
-			// },
-			// Tell the client that this server supports formatting.
 			documentFormattingProvider: true,
-			// Tell the client that this server supports going to definition.
 		}
 	};
-	if (hasWorkspaceFolderCapability) {
-		result.capabilities.workspace = {
-			workspaceFolders: {
-				supported: true
-			}
-		};
-	}
 	return result;
 });
 
-connection.onInitialized(() => {
-	if (hasConfigurationCapability) {
-		// Register for all configuration changes.
-		connection.client.register(DidChangeConfigurationNotification.type, undefined);
-	}
-	if (hasWorkspaceFolderCapability) {
-		connection.workspace.onDidChangeWorkspaceFolders(_event => {
-			connection.console.log('Workspace folder change event received.');
-		});
-	}
-});
-
-// The example settings
-interface ExampleSettings {
-	maxNumberOfProblems: number;
-}
-
-// The global settings, used when the `workspace/configuration` request is not supported by the client.
-// Please note that this is not the case when using this server with the client provided in this example
-// but could happen with other clients.
-const defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 };
-let globalSettings: ExampleSettings = defaultSettings;
-
-// Cache the settings of all open documents
-const documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
-const documentContents: Map<string, bugs.Program> = new Map();
-
-connection.onDidChangeConfiguration(change => {
-	if (hasConfigurationCapability) {
-		// Reset all cached document settings
-		documentSettings.clear();
-	} else {
-		globalSettings = <ExampleSettings>(
-			(change.settings.languageServerExample || defaultSettings)
-		);
-	}
-
-	// Revalidate all open text documents
-	documents.all().forEach(validateTextDocument);
-});
-
-// Only keep settings for open documents
-documents.onDidClose(e => {
-	documentSettings.delete(e.document.uri);
-});
-
-// The content of a text document has changed. This event is emitted
-// when the text document first opened or when its content has changed.
-documents.onDidChangeContent(change => {
-	validateTextDocument(change.document);
-});
-
-
-function simpleDiagnositic(message: string): Diagnostic {
-	return {
-		'range': {
-			'start': { 'line': 0, 'character': 0 },
-			'end': { 'line': 0, 'character': 0 },
-		},
-		'message': `${message} Please report to the extension author.`,
-		'source': 'OpenBUGS VSCode Extension Internal Error'
-	}
-}
-
-function locateOpenBugsOnWindows(): string {
-	const drives = ['c', 'd', 'e', 'f'];
-	const programFiles = ['Program Files', 'Program Files (x86)']
-	const installPaths = Seq.cartesianProduct(drives, programFiles).map(({ left: drive, right: programFiles }) => {
-		return `${drive}:\\${programFiles}\\OpenBUGS`
+async function initializePathOfStorage(): Promise<void> {
+	return connection.sendRequest('custom/getStoragePath').then((path: string) => {
+		pathToStorage = path;
+		if (!fs.existsSync(path)) {
+			fs.mkdirSync(path)
+		}
 	})
-	// find path to OpenBUGS
-	let path;
-	try {
-		path = Seq.findFirst(installPaths, (path) => {
-			return fs.existsSync(path)
-		})
-	} catch (e) {
-		if (e === 'Not found') {
-			throw simpleDiagnositic(`I cannot find OpenBUGS installation in [${installPaths.join(', ')}].`)
+}
+
+connection.onInitialized((_params) => {
+	if (os.platform() === 'win32') {
+		const drives = ['c', 'd', 'e', 'f'];
+		const programFiles = ['Program Files', 'Program Files (x86)']
+		const possiblePaths = Seq.cartesianProduct(drives, programFiles).
+			map(({ left: drive, right: programFiles }) => {
+				return `${drive}:\\${programFiles}\\OpenBUGS`
+			})
+		const installedPaths = possiblePaths.
+			filter((path) => fs.existsSync(path)).
+			flatMap((path) => {
+				return fs.readdirSync(path).
+					filter((version) => {
+						return version.startsWith('OpenBUGS')
+					}).
+					map((version) => {
+						return `${path}\\${version}\\OpenBUGS.exe`
+					})
+			});
+		if (installedPaths.length === 0) {
+			connection.sendNotification("custom/warning", `I find no OpenBUGS installation in ${possiblePaths.join(', ')}.`)
+			return
+		} else if (installedPaths.length > 0) {
+			connection.sendNotification("custom/warning", `I am not sure which OpenBUGS should I use. There are more than one installations: ${possiblePaths.join(', ')}.`)
+			return
 		} else {
-			throw e
+			pathToOpenBUGS = installedPaths[0]
+			return
 		}
+	} else if (os.platform() === 'linux') {
+		pathToOpenBUGS = 'OpenBUGS'
+		return
+	} else {
+		connection.sendNotification('custom/warning', `Sorry, your OS (${os.platform()}) is not supported yet.`)
+		return
 	}
-	const versions = fs.readdirSync(path)
-	for (const version of versions) {
-		if (version.startsWith('OpenBUGS')) {
-			return `${path}\\${version}\\OpenBUGS.exe`
+})
+
+documents.onDidChangeContent(change => {
+	handleDidChangeContent(change.document);
+});
+
+
+async function handleDidChangeContent(textDocument: TextDocument): Promise<void> {
+	if (pathToStorage === undefined) {
+		initializePathOfStorage().then(() => handleDidChangeContent(textDocument))
+	} else {
+		try {
+			connection.sendDiagnostics({
+				uri: textDocument.uri,
+				diagnostics: [
+					...modelCheck(textDocument),
+					...parseAndCheck(textDocument)
+				]
+			})
+			return
+		} catch (e) {
+			connection.sendNotification('custom/warning', `Found an internal error. Please report to the auther of OpenBUGS VSCode extension. The error is ${JSON.stringify(e)}`)
 		}
 	}
 }
 
-function freshPath() {
-	// return tmp.fileSync().name
-	if (os.platform() === 'win32') {
-		return 'C:\\Users\\user\\Desktop\\VSCodeOpenBUGS' + Math.round(Math.random() * 10000) + '.txt'
+let freshCounter = 0;
+function freshPath(suffix: string = '.txt') {
+	if (pathToStorage !== undefined) {
+		freshCounter++;
+		return path.join(pathToStorage, `${freshCounter}-${suffix}`)
 	} else {
-		return tmp.fileSync().name
+		throw 'storage path is not defined yet.'
 	}
 }
 
 function execModelCheckWin(modelPath: string): string {
-	const FULLPATH = locateOpenBugsOnWindows();
-	// const FULLPATH = `c:\\Program Files\\OpenBUGS\\OpenBUGS323`
-	const scriptPath: string = freshPath();
-	const logPath: string = freshPath();
-	// const scriptPath: string = "c:\\Users\\user\\Desktop\\script.txt"
-	// const logPath: string = "c:\\Users\\user\\Desktop\\log.txt";
+	// assume pathToOpenBUGS is defined.
+	const scriptPath: string = freshPath('script.txt');
+	const logPath: string = freshPath('log.txt');
 	const winPathToOpenBubsPath = (path) => path.replace(/\\/g, '/');
 	const scriptContent = [
 		`modelDisplay('log')`,
@@ -189,107 +133,85 @@ function execModelCheckWin(modelPath: string): string {
 		`modelQuit('yes')`
 	].join(os.EOL)
 	fs.writeFileSync(scriptPath, scriptContent)
-	// const command = `'"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS' | cmd`
-	const command = `"${FULLPATH}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS`
-	try {
-		execSync(command, { shell: 'cmd.exe' })
-	} catch (e) {
-		e.stdout = e.stdout.toString()
-		e.stderr = e.stderr.toString()
-		throw { where: 'execSync', error: e };
-	}
-	// return "Hey, the command was ran successfully."
-	// return `script path:${scriptPath}\nscript:\n${scriptContent}\ncommand: ${command} error pos 0`;
-	// readFileSync probably didn't return.
-	const logContent = fs.readFileSync(logPath).toString();
-	// return "Okay, the cmd was good, how about read?"
-	return logContent
+	const command = `"${pathToOpenBUGS}" /PAR "${winPathToOpenBubsPath(scriptPath)}" /HEADLESS`
+	execSync(command, { shell: 'cmd.exe' })
+	const result = fs.readFileSync(logPath).toString();
+	fs.unlinkSync(scriptPath);
+	fs.unlinkSync(logPath);
+	return result
 }
 
 function execModelCheck(textDocument: TextDocument): string {
-	const modelPath = freshPath();
+	const modelPath = freshPath('model.txt');
 	fs.writeFileSync(modelPath, textDocument.getText());
+	let result: string;
 	if (os.platform() === 'win32') {
-		return execModelCheckWin(modelPath)
+		result = execModelCheckWin(modelPath)
 	} else {
-		return execSync(`echo 'modelCheck("${modelPath}")' | OpenBUGS`, { 'timeout': 300 }).toString()
+		result = execSync(`echo 'modelCheck("${modelPath}")' | OpenBUGS`, { 'timeout': 300 }).toString()
 	}
-}
-
-function diagnosticOfModelCheck(textDocument: TextDocument, modelCheckResult: string): Array<Diagnostic> {
-	// skip shit and newline
-	if (modelCheckResult.startsWith("OpenBUGS version")) {
-		modelCheckResult = modelCheckResult.split(os.EOL).slice(1).join(os.EOL)
-	}
-	const matchResult = /error pos ([\d]+)/.exec(modelCheckResult)
-	if (matchResult === null) {
-		// the result looks good
-		// TODO: fix this after debugging
-		return [simpleDiagnositic(modelCheckResult)]
-	}
-	const pos = textDocument.positionAt(parseInt(matchResult[1]))
-	const message = modelCheckResult.replace(/error pos ([\d]+)/, '')
-	return [{
-		'range': {
-			'start': pos,
-			'end': pos
-		},
-		'message': message,
-		'source': 'OpenBUGS modelCheck'
-	}]
+	fs.unlinkSync(modelPath);
+	return result
 }
 
 function modelCheck(textDocument: TextDocument): Diagnostic[] {
-	let modelCheckResult = execModelCheck(textDocument);
-	return diagnosticOfModelCheck(textDocument, modelCheckResult)
-}
-
-async function validateTextDocument(textDocument: TextDocument): Promise<void> {
-	const diagnostics: Diagnostic[] = [];
-	const text = textDocument.getText();
-
-	try {
-		diagnostics.push(...modelCheck(textDocument))
-	} catch (e) {
-		diagnostics.push(simpleDiagnositic(`Some unhandled error happens during modelCheck ${JSON.stringify(e)}`))
-	}
-
-	try {
-		documentContents.delete(textDocument.uri);
-		const parseResult = bugs.parse(text);
-		if (parseResult.kind === 'error') {
-			for (const err of parseResult.content) {
-				const parseDiagnostic: Diagnostic = {
-					severity: DiagnosticSeverity.Error,
-					range: {
-						start: err.position,
-						end: err.position,
-					},
-					message: err.message,
-					source: 'OpenBUGS VSCode Extension'
-				};
-				diagnostics.push(parseDiagnostic);
-			}
-		} else {
-			documentContents.set(textDocument.uri, parseResult.content);
+	function diagnosticOfLog(textDocument: TextDocument, log: string): Array<Diagnostic> {
+		// skip shit and newline
+		if (log.startsWith("OpenBUGS version")) {
+			log = log.split(os.EOL).slice(1).join(os.EOL)
 		}
-	} catch (e) {
-		diagnostics.push(simpleDiagnositic(`Some unhandled error happens during parsing ${JSON.stringify(e)}`))
+		const matchResult = /error pos ([\d]+)/.exec(log)
+		if (matchResult === null) {
+			// connection.sendNotification('custom/information', log)
+			return []
+		} else {
+			const pos = textDocument.positionAt(parseInt(matchResult[1]))
+			const message = log.replace(/error pos ([\d]+)/, '')
+			return [{
+				'range': {
+					'start': pos,
+					'end': pos
+				},
+				'message': message,
+				'source': 'OpenBUGS modelCheck'
+			}]
+		}
 	}
 
-	connection.sendDiagnostics({ uri: textDocument.uri, diagnostics });
+	let LogOfOpenBUGS = execModelCheck(textDocument);
+	return diagnosticOfLog(textDocument, LogOfOpenBUGS)
 }
 
-connection.onDidChangeWatchedFiles(_change => {
-	// Monitored files have change in VSCode
-	connection.console.log('We received an file change event');
-});
+function parseAndCheck(textDocument: TextDocument): Array<Diagnostic> {
+	const text = textDocument.getText();
+	documentContents.delete(textDocument.uri);
+	const parseResult = bugs.parse(text);
+	if (parseResult.kind === 'error') {
+		return parseResult.content.map((err) => {
+			return {
+				severity: DiagnosticSeverity.Error,
+				range: {
+					start: err.position,
+					end: err.position,
+				},
+				message: err.message,
+				source: 'Reported by OpenBUGS Extension'
+			};
+		})
+	} else {
+		documentContents.set(textDocument.uri, parseResult.content);
+		return [];
+	}
+}
 
 connection.onDocumentFormatting(
 	(params, token, workDoneProgress, resultProgress) => {
 		const { textDocument: { uri }, options } = params;
 		const term = documentContents.get(uri);
-		if (term) {
+		if (term === undefined) {
+			connection.sendNotification('custom/information', 'Please fix grammar errors before formatting.')
+			return []
+		} else {
 			const formattedText = bugs.prettyPrint(term);
 			const result: TextEdit[] = [];
 			result.push({
@@ -300,50 +222,8 @@ connection.onDocumentFormatting(
 				newText: formattedText || ""
 			});
 			return result;
-		} else {
-			return [];
 		}
 	});
 
-// This handler provides the initial list of the completion items.
-connection.onCompletion(
-	(_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
-		// The pass parameter contains the position of the text document in
-		// which code complete got requested. For the example we ignore this
-		// info and always provide the same completion items.
-		return [
-			{
-				label: 'TypeScript',
-				kind: CompletionItemKind.Text,
-				data: 1
-			},
-			{
-				label: 'JavaScript',
-				kind: CompletionItemKind.Text,
-				data: 2
-			}
-		];
-	}
-);
-
-// This handler resolves additional information for the item selected in
-// the completion list.
-connection.onCompletionResolve(
-	(item: CompletionItem): CompletionItem => {
-		if (item.data === 1) {
-			item.detail = 'TypeScript details';
-			item.documentation = 'TypeScript documentation';
-		} else if (item.data === 2) {
-			item.detail = 'JavaScript details';
-			item.documentation = 'JavaScript documentation';
-		}
-		return item;
-	}
-);
-
-// Make the text document manager listen on the connection
-// for open, change and close text document events
 documents.listen(connection);
-
-// Listen on the connection
 connection.listen();

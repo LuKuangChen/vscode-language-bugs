@@ -27,6 +27,10 @@ function fail<V, E>(e: E): Error<V, E> {
 	return { kind: "error", content: e }
 }
 
+function messageOfPegError(e: bugsPeg.SyntaxErr): string {
+	return e.toString()
+}
+
 export function parse(sourceCode: string): Error<Program, ParseError[]> {
 	let parseResult = bugsPeg.parse(sourceCode);
 	if (parseResult.ast !== null) {
@@ -35,7 +39,7 @@ export function parse(sourceCode: string): Error<Program, ParseError[]> {
 		const errors: ParseError[] = parseResult.errs.map((e) => {
 			return {
 				position: positionOfPosInfo(e.pos),
-				message: e.toString()
+				message: messageOfPegError(e)
 			}
 		});
 		return fail(errors);

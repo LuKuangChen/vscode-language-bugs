@@ -16,6 +16,9 @@ export const Seq = {
 		}
 		throw "Not found"
 	},
+	filter: <X>(xs: Array<X>, p: (x: X) => boolean) => {
+		return xs.filter(p)
+	},
 	dropWhile: <X>(xs: Array<X>, p: (x: X) => boolean) => {
 		let i: number;
 		for (i = 0; i < xs.length && p(xs[i]); i++) {
