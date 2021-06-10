@@ -10,7 +10,7 @@ All notable changes to the "OpenBUGS" extension will be documented in this file.
 
 ## 1.0.1 - 2021-06-11
 
-- Changed to only perform modelCheck when a file is saved.
+- Changed to perform modelCheck on file-save events, (instead of file-change events, which happens too frequently).
 
 ## 1.0.0 - 2021-06-11
 
