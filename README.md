@@ -8,7 +8,7 @@
   - [built-in distributions](https://www.multibugs.org/documentation/latest/Distributions.html)
 - format document (Right Click > Format Document)
 - check model wellformedness
-  - OpenBUGS' `modelCheck`: this is only performed when a file is saved because it can be slow on some platform.
+  - OpenBUGS' `modelCheck`: this is only performed when a file is saved because it is slow on Windows.
   - My own grammar checker: this is usually faster and is performed on every file change.
 
 ## Known issues
