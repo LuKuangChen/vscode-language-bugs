@@ -95,6 +95,8 @@ function messageOfPegError(e: bugsPeg.SyntaxErr): string {
 				return ["a data block"]
 			} else if (entry === 'model') {
 				return ["a model block"]
+			} else if (entry === 'c\\(') {
+				return ["a 'c()'"]
 			} else if (entry === '-?([\\d]+([.][\\d]+)?|([\\d]+)?[.][\\d]+)([eE]-?[\\d]+)?') {
 				return ["a number"]
 			} else if (entry === '[a-zA-Z][a-zA-Z0-9._]*') {
