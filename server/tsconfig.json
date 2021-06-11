@@ -5,9 +5,13 @@
 		"lib": ["ES2019"],
 		"outDir": "out",
 		"rootDir": "src",
-		"sourceMap": true,
-		"composite": true
+		"sourceMap": true
 	},
-	"include": ["src"],
-	"exclude": ["node_modules", ".vscode-test"],
+	"include": [
+		"src"
+	],
+	"exclude": [
+		"node_modules",
+		".vscode-test"
+	]
 }

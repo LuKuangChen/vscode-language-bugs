@@ -9,6 +9,7 @@ const testParseFile = (filepath: string) => {
 		const parseResult = bugs.parse(fileContent);
 		if (parseResult.kind === 'error') {
 			console.log('Parse Error', filepath)
+			console.log(JSON.stringify(parseResult, null, '    '))
 			return;
 		}
 		const program = parseResult.content;
@@ -31,7 +32,7 @@ const testParseFile = (filepath: string) => {
 	})
 }
 
-const pathToTestPrograms = join(__dirname, '../testSuite');
+const pathToTestPrograms = join(__dirname, '../../testSuite');
 fs.readdir(pathToTestPrograms, (err, files) => {
 	if (err) throw err;
 	for (const file of files) {

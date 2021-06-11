@@ -9,7 +9,6 @@ import {
 	InitializeResult,
 } from 'vscode-languageserver/node';
 import * as bugs from './BUGSKit';
-import * as tmp from 'tmp'
 import * as path from 'path'
 import * as os from 'os'
 import {
@@ -26,9 +25,6 @@ const documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
 const documentContents: Map<string, bugs.Program> = new Map();
 let pathToOpenBUGS: string | undefined = undefined;
 let pathToStorage: string | undefined = undefined;
-
-// connection.onNotification('custom/setStoragePath', (path) => {
-// })
 
 connection.onInitialize((_params: InitializeParams) => {
 	const result: InitializeResult = {

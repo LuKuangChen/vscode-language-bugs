@@ -1,4 +1,4 @@
-import { Position } from 'vscode-languageserver';
+import { ParameterStructures, Position } from 'vscode-languageserver';
 import * as bugsPeg from './bugsPeg';
 import { Doc, makePrinter } from './prettyPrinter';
 import { Seq } from './Seq';
@@ -28,7 +28,87 @@ function fail<V, E>(e: E): Error<V, E> {
 }
 
 function messageOfPegError(e: bugsPeg.SyntaxErr): string {
-	return e.toString()
+	let expectations = e.expmatches.
+		map((x) => {
+			if (x.kind === 'RegexMatch') {
+				return x.literal;
+			} else {
+				return 'EOF'
+			}
+		}).
+		flatMap((entry) => {
+			if (entry === '[\\n]') {
+				return []
+			} else if (entry === '[#]') {
+				return []
+			} else if (entry === ';') {
+				return ["';'"]
+			} else if (entry === '\\(') {
+				return ["'('"]
+			} else if (entry === '\\)') {
+				return ["')'"]
+			} else if (entry === '\\[') {
+				return ["'['"]
+			} else if (entry === '\\]') {
+				return ["']'"]
+			} else if (entry === '{') {
+				return ["'{'"]
+			} else if (entry === '}') {
+				return ["'}'"]
+			} else if (entry === '\\+') {
+				return ["'+'"]
+			} else if (entry === '-') {
+				return ["'-'"]
+			} else if (entry === '\\*') {
+				return ["'*'"]
+			} else if (entry === '/') {
+				return ["'/'"]
+			} else if (entry === ':') {
+				return ["':'"]
+			} else if (entry === ',') {
+				return ["','"]
+			} else if (entry === '.') {
+				return ["'.'"]
+			} else if (entry === '~') {
+				return ["'~'"]
+			} else if (entry === '=') {
+				return ["'='"]
+			} else if (entry === '<-') {
+				return ["'<-'"]
+			} else if (entry === 'C') {
+				return ["a 'C(,)'"]
+			} else if (entry === 'T') {
+				return ["a 'T(,)'"]
+			} else if (entry === 'I') {
+				return ["a 'I(,)'"]
+			} else if (entry === 'in') {
+				return ["the keyword 'in'"]
+			} else if (entry === 'END') {
+				return ["the keyword 'END'"]
+			} else if (entry === 'Dim') {
+				return ["the word 'Dim'"]
+			} else if (entry === 'Data') {
+				return ["the word 'Data'"]
+			} else if (entry === 'for') {
+				return ["a \"for-loop\""]
+			} else if (entry === 'data') {
+				return ["a data block"]
+			} else if (entry === 'model') {
+				return ["a model block"]
+			} else if (entry === '-?([\\d]+([.][\\d]+)?|([\\d]+)?[.][\\d]+)([eE]-?[\\d]+)?') {
+				return ["a number"]
+			} else if (entry === '[a-zA-Z][a-zA-Z0-9._]*') {
+				return ["a variable"]
+			} else if (entry === 'list[(]') {
+				return ["a list"]
+			} else if (entry === 'structure[(]') {
+				return ["a structure"]
+			} else {
+				return [entry]
+			}
+		})
+	expectations.sort((a, b) => a.length - b.length)
+	return `Expecting ${[...expectations].slice(0, -1).join(', ')}, or ${expectations[expectations.length - 1]}`
 }
 
 export function parse(sourceCode: string): Error<Program, ParseError[]> {
@@ -55,16 +135,12 @@ function transformProgram(program: bugsPeg.program): Program {
 		}
 	}
 	function tExp0(exp: bugsPeg.exp0): Expression {
-		if (exp.kind === 'exp0_4') {
+		if (exp.kind === 'exp0_3') {
 			return { kind: '()', content: tExp(exp.exp) }
 		} else if (exp.kind === 'name') {
 			return { kind: 'variable', name: tName(exp) }
 		} else if (exp.kind === 'scalar') {
 			return tScalar(exp)
-		} else if (exp.kind === 'structure') {
-			return { kind: 'structure', data: tExp(exp.data), dim: tExp(exp.dim) }
-		} else if (exp.kind === 'list') {
-			return tList(exp)
 		} else {
 			throw "Never";
 		}
@@ -113,10 +189,21 @@ function transformProgram(program: bugsPeg.program): Program {
 			return e;
 		}
 	}
+	function tListExp(exp: bugsPeg.listExp): ListExp {
+		if (exp.kind === 'scalar') {
+			return tScalar(exp)
+		} else if (exp.kind === 'NA') {
+			return { 'kind': 'NA' }
+		} else if (exp.kind === 'structure') {
+			return { 'kind': 'structure', 'data': tListExp(exp.data), 'dim': tListExp(exp.dim) }
+		} else {
+			return { 'kind': 'c', 'content': [tListExp(exp.operands.content.first), ...exp.operands.content.rest.map(({ sep, item }) => tListExp(item))] }
+		}
+	}
 	function tList(list: bugsPeg.list): List {
-		const operands: [Name, Expression][] = [];
-		function tField(field: bugsPeg.field): [Name, Expression] {
-			return [tName(field.name), tExp(field.value)]
+		const operands: [Name, ListExp][] = [];
+		function tField(field: bugsPeg.field): [Name, ListExp] {
+			return [tName(field.name), tListExp(field.value)]
 		}
 		if (list.operands.content !== null) {
 			operands.push(tField(list.operands.content.first))
@@ -307,7 +394,7 @@ export interface IndexedRelation {
 	body: Block;
 }
 
-export type Expression = Variable | Scalar | Application | Subscription | Structure | List | ParenthesizedExpression | BinOp | UnOp
+export type Expression = Variable | Scalar | Application | Subscription | ParenthesizedExpression | BinOp | UnOp
 
 export interface Variable {
 	kind: "variable";
@@ -355,13 +442,24 @@ export interface Subscription {
 
 export interface Structure {
 	kind: "structure";
-	data: Expression;
-	dim: Expression;
+	data: ListExp;
+	dim: ListExp;
 }
 
 export interface List {
 	kind: "list";
-	content: Array<[Name, Expression]>;
+	content: Array<[Name, ListExp]>;
+}
+
+export type ListExp = Scalar | NA | Structure | ListExpC;
+
+export interface NA {
+	kind: 'NA'
+}
+
+export interface ListExpC {
+	kind: 'c',
+	content: Array<ListExp>
 }
 
 export interface ParenthesizedExpression {
@@ -416,30 +514,6 @@ export function prettyPrint(p: Program): string {
 				PP.text(' '),
 				pExp(exp.exp)
 			])
-		} else if (exp.kind === 'structure') {
-			return PP.vconcat([
-				PP.text("structure("),
-				PP.nest(PP.vconcat([
-					PP.fconcat([
-						PP.fconcat([PP.text(".Data="), pExp(exp.data)]),
-						PP.text(',')
-					]),
-					PP.fconcat([PP.text(".Dim="), pExp(exp.dim)])
-				])),
-				PP.text(")")
-			])
-		} else if (exp.kind === 'list') {
-			return PP.fconcat([
-				PP.text("list("),
-				PP.fconcat(Seq.intersperse(PP.text(", "), exp.content.map(([name, exp]) => {
-					return PP.fconcat([
-						pName(name),
-						PP.text("="),
-						pExp(exp)
-					])
-				}))),
-				PP.text(")"),
-			])
 		} else {
 			return PP.fconcat([
 				PP.text("("),
@@ -447,6 +521,36 @@ export function prettyPrint(p: Program): string {
 				PP.text(")"),
 			])
 		}
+	}
+	function pListExp(exp: ListExp): Doc {
+		if (exp.kind === 'scalar') {
+			return pScalar(exp)
+		} else if (exp.kind === 'NA') {
+			return PP.text('NA')
+		} else if (exp.kind === 'structure') {
+			return pStructure(exp)
+		} else {
+			return PP.fconcat([
+				PP.text("c("),
+				...Seq.intersperse(
+					PP.text(', '),
+					exp.content.map(pListExp)),
+				PP.text(')')
+			])
+		}
+	}
+	function pStructure(exp: Structure): Doc {
+		return PP.vconcat([
+			PP.text("structure("),
+			PP.nest(PP.vconcat([
+				PP.fconcat([
+					PP.fconcat([PP.text(".Data="), pListExp(exp.data)]),
+					PP.text(',')
+				]),
+				PP.fconcat([PP.text(".Dim="), pListExp(exp.dim)])
+			])),
+			PP.text(")")
+		])
 	}
 	function pCTI(cti: StochasticRelation['cti']): Doc {
 		if (cti === null) {
@@ -581,7 +685,7 @@ export function prettyPrint(p: Program): string {
 			...Seq.intersperse(
 				PP.text(', '),
 				list.content.map(([name, exp]) => {
-					return PP.fconcat([pName(name), PP.text(' = '), pExp(exp)])
+					return PP.fconcat([pName(name), PP.text(' = '), pListExp(exp)])
 				})),
 			PP.text(')')
 		])

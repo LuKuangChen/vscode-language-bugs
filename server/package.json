@@ -1,0 +1,37 @@
+{
+    "name": "openbugs-language-server",
+    "version": "1.0.1",
+    "publisher": "LuKC1024",
+    "engines": {
+        "vscode": "^1.56.0"
+    },
+    "license": "MIT",
+    "displayName": "OpenBUGS Language Server",
+    "description": "OpenBUGS Language Support",
+    "keywords": [
+        "BUGS",
+        "OpenBUGS",
+        "WinBUGS",
+        "MultiBUGS",
+        "JAGS"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/LuKC1024/vscode-language-bugs"
+    },
+    "scripts": {
+		"build": "npm run compileParser && esbuild ./src/main.ts --bundle --outfile=dist/main.js --format=cjs --platform=node --sourcemap --minify",
+        "compileParser": "npx tspeg ./src/bugs.peg ./src/bugsPeg.ts",
+        "test": "npm run compileParser && esbuild ./src/test.ts --bundle --outfile=test/test.js --format=cjs --platform=node --sourcemap && node ./test/test.js"
+    },
+    "dependencies": {
+        "vscode-languageserver": "^7.0.0",
+        "vscode-languageserver-textdocument": "^1.0.1"
+    },
+    "devDependencies": {
+        "@types/node": "^15.12.0",
+        "esbuild": "^0.12.8",
+        "tspeg": "^3.1.0",
+        "typescript": "^4.3.2"
+    }
+}

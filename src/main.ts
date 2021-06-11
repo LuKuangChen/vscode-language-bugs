@@ -4,7 +4,6 @@
  * ------------------------------------------------------------------------------------------ */
 
 import * as path from 'path';
-import { Uri } from 'vscode';
 import { workspace, ExtensionContext, window } from 'vscode';
 
 import {
@@ -19,7 +18,7 @@ let client: LanguageClient;
 export function activate(context: ExtensionContext) {
 	// The server is implemented in node
 	let serverModule = context.asAbsolutePath(
-		path.join('out', 'server.js')
+		path.join('server', 'dist', 'main.js')
 	);
 	// The debug options for the server
 	// --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging

@@ -1,80 +1,82 @@
 {
-    "name": "openbugs",
-    "version": "1.0.1",
-    "publisher": "LuKC1024",
-    "engines": {
-        "vscode": "^1.56.0"
-    },
-    "license": "MIT",
-    "displayName": "OpenBUGS",
-    "description": "OpenBUGS Language Support",
-    "categories": [
-        "Programming Languages",
-        "Snippets",
-        "Formatters"
-    ],
-    "keywords": [
-        "BUGS", "OpenBUGS", "WinBUGS", "MultiBUGS", "JAGS"
-    ],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/LuKC1024/vscode-language-bugs"
-    },
-    "activationEvents": [
-        "onLanguage:bugs"
-    ],
-    "main": "./client/out/extension.js",
-    "contributes": {
-        "languages": [
-            {
-                "id": "bugs",
-                "aliases": [
-                    "BUGS",
-                    "bugs",
-                    "OpenBUGS",
-                    "openbugs"
-                ],
-                "extensions": [
-                    ".bugs"
-                ],
-                "filenamePatterns": [
-                    "*model*.txt",
-                    "*init*.txt",
-                    "*data*.txt"
-                ],
-                "configuration": "./language-configuration.json"
-            }
-        ],
-        "grammars": [
-            {
-                "language": "bugs",
-                "scopeName": "source.bugs",
-                "path": "./syntaxes/bugs.tmLanguage.json"
-            }
-        ],
-        "snippets": [
-            {
-                "language": "bugs",
-                "path": "./snippets.json"
-            }
-        ]
-    },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "npm run compileParser && tsc -b",
-        "watch": "npm run compileParser && tsc -b -w",
-        "postinstall": "cd client && npm install cd ..",
-        "compileParser": "npx tspeg ./src/bugs.peg ./src/bugsPeg.ts",
-        "test": "npm run compile && node ./out/test.js"
-    },
-    "dependencies": {
-        "tmp": "^0.2.1",
-        "vscode-languageserver": "^7.0.0",
-        "vscode-languageserver-textdocument": "^1.0.1"
-    },
-    "devDependencies": {
-        "@types/node": "^15.12.0",
-        "tspeg": "^3.1.0",
-        "typescript": "^4.3.2"
-    }
+	"name": "openbugs",
+	"version": "1.1.0-dev1",
+	"publisher": "LuKC1024",
+	"engines": {
+		"vscode": "^1.56.0"
+	},
+	"license": "MIT",
+	"displayName": "OpenBUGS",
+	"description": "OpenBUGS Language Support",
+	"categories": [
+		"Programming Languages",
+		"Snippets",
+		"Formatters"
+	],
+	"keywords": [
+		"BUGS",
+		"OpenBUGS",
+		"WinBUGS",
+		"MultiBUGS",
+		"JAGS"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/LuKC1024/vscode-language-bugs"
+	},
+	"activationEvents": [
+		"onLanguage:bugs"
+	],
+	"main": "./dist/main.js",
+	"contributes": {
+		"languages": [
+			{
+				"id": "bugs",
+				"aliases": [
+					"BUGS",
+					"bugs",
+					"OpenBUGS",
+					"openbugs"
+				],
+				"extensions": [
+					".bugs"
+				],
+				"filenamePatterns": [
+					"*model*.txt",
+					"*init*.txt",
+					"*data*.txt"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "bugs",
+				"scopeName": "source.bugs",
+				"path": "./syntaxes/bugs.tmLanguage.json"
+			}
+		],
+		"snippets": [
+			{
+				"language": "bugs",
+				"path": "./snippets.json"
+			}
+		]
+	},
+	"scripts": {
+		"postinstall": "cd server && npm install && cd ..",
+		"build": "cd server && npm run build && cd .. && npm run buildThis",
+		"buildThis": "esbuild ./src/main.ts --bundle --outfile=dist/main.js --external:vscode --format=cjs --platform=node --sourcemap --minify",
+		"vscode:prepublish": "npm run build"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^7.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^15.12.2",
+		"@types/vscode": "^1.52.0",
+		"esbuild": "^0.12.8",
+		"typescript": "^4.3.2",
+		"vscode-test": "^1.3.0"
+	}
 }

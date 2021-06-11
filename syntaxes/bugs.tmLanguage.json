@@ -42,7 +42,7 @@
 		"identifiers": {
 			"patterns": [
 				{
-					"name": "variable.parameter",
+					"name": "variable.parameter.bugs",
 					"match": "[a-zA-Z][a-zA-Z0-9._]*"
 				}
 			]
@@ -58,7 +58,7 @@
 		"constants": {
 			"patterns": [
 				{
-					"name": "constant.language",
+					"name": "constant.language.bugs",
 					"match": "\b(NA)\b"
 				}
 			]
@@ -66,7 +66,7 @@
 		"comments": {
 			"patterns": [
 				{
-					"name": "comment.line.number-sign",
+					"name": "comment.line.number-sign.bugs",
 					"match": "#.*$"
 				}
 			]
