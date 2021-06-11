@@ -81,6 +81,8 @@ function messageOfPegError(e: bugsPeg.SyntaxErr): string {
 				return ["a 'T(,)'"]
 			} else if (entry === 'I') {
 				return ["a 'I(,)'"]
+			} else if (entry === 'NA') {
+				return ["the keyword 'NA'"]
 			} else if (entry === 'in') {
 				return ["the keyword 'in'"]
 			} else if (entry === 'END') {
@@ -98,7 +100,7 @@ function messageOfPegError(e: bugsPeg.SyntaxErr): string {
 			} else if (entry === 'c\\(') {
 				return ["a 'c()'"]
 			} else if (entry === '-?([\\d]+([.][\\d]+)?|([\\d]+)?[.][\\d]+)([eE]-?[\\d]+)?') {
-				return ["a number"]
+				return ["a scalar"]
 			} else if (entry === '[a-zA-Z][a-zA-Z0-9._]*') {
 				return ["a variable"]
 			} else if (entry === 'list[(]') {
